@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "alienz-website",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-09-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "alienz-website"
+    }
+  ],
+  "observability": { "enabled": true }
+  // Secrets (DATABASE_URL, ADMIN_*) are set in the Cloudflare dashboard,
+  // never here. Local `wrangler dev` / `npm run preview` reads .dev.vars.
+}

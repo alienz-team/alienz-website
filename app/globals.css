@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+/* Tokens drawn from the ALIENZ brand: the logo's alien green and the
+   space-purple of the team's own campaign artwork. */
+@theme {
+  --color-space: #140c33;
+  --color-orbit: #1e1547;
+  --color-nebula: #2a1e5e;
+  --color-line: #3a2e78;
+  --color-alien: #3fe53b;
+  --color-alien-deep: #1f8f1c;
+  --color-starlight: #f1edff;
+  --color-haze: #b3abdc;
+  --color-lavender: #efebfa;
+  --color-ink: #1b1240;
+  --color-ink-soft: #4a4072;
+
+  --font-display: var(--font-cairo), system-ui, sans-serif;
+  --font-sans: var(--font-plex-arabic), var(--font-cairo), system-ui, sans-serif;
+  --font-latin: var(--font-chakra), var(--font-cairo), sans-serif;
+
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-rise: rise 0.8s cubic-bezier(0.2, 0.7, 0.1, 1) both;
+  --animate-pulse-dot: pulse-dot 2.4s ease-out infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(50%); }
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(0.6em); filter: blur(6px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+  @keyframes pulse-dot {
+    0% { box-shadow: 0 0 0 0 rgb(63 229 59 / 0.55); }
+    70%, 100% { box-shadow: 0 0 0 9px rgb(63 229 59 / 0); }
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-space);
+    color: var(--color-starlight);
+    font-family: var(--font-sans);
+    line-height: 1.8;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+  p { text-wrap: pretty; }
+  :focus-visible {
+    outline: 2px solid var(--color-alien);
+    outline-offset: 3px;
+  }
+  ::selection {
+    background: var(--color-alien);
+    color: var(--color-space);
+  }
+}
+
+@layer components {
+  /* Chamfered frame, borrowed from Hexwall's cut-corner panels. Mirrored
+     for RTL so the cut sits on the leading (right) top corner. */
+  .chamfer {
+    clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px));
+  }
+  .chamfer-sm {
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  }
+
+  /* Faint star grid behind dark sections — a quiet nod to the campaign art. */
+  .starfield {
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgb(241 237 255 / 0.55) 50%, transparent 51%),
+      radial-gradient(1px 1px at 70% 80%, rgb(241 237 255 / 0.4) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 85% 15%, rgb(241 237 255 / 0.5) 50%, transparent 51%),
+      radial-gradient(1px 1px at 40% 65%, rgb(241 237 255 / 0.3) 50%, transparent 51%);
+    background-size: 260px 260px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

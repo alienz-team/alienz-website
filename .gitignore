@@ -1,0 +1,23 @@
+# dependencies
+node_modules
+
+# next / opennext / wrangler build output
+.next
+out
+.open-next
+.wrangler
+*.tsbuildinfo
+next-env.d.ts
+
+# secrets — never commit
+.env
+.env*.local
+.env.production
+.dev.vars
+.dev.vars.*
+!.env.example
+
+# misc
+.DS_Store
+*.log
+cloudflare-env.d.ts.bak

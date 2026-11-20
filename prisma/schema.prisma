@@ -1,0 +1,69 @@
+// Neon PostgreSQL. DATABASE_URL is the pooled endpoint used at runtime;
+// DIRECT_URL is the direct endpoint Prisma CLI uses for schema pushes.
+// No custom `output`: OpenNext patches the default client for workerd.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  image       String
+  sortOrder   Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published, sortOrder])
+}
+
+/// Campaign / portfolio artwork shown in the marketing album.
+model Project {
+  id        String   @id @default(cuid())
+  title     String
+  image     String
+  width     Int      @default(1920)
+  height    Int      @default(1080)
+  alt       String
+  sortOrder Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published, sortOrder])
+}
+
+enum InquiryStatus {
+  NEW
+  READ
+  ARCHIVED
+}
+
+/// Messages sent from the public contact form.
+model Inquiry {
+  id        String        @id @default(cuid())
+  name      String
+  contact   String
+  service   String?
+  message   String
+  status    InquiryStatus @default(NEW)
+  createdAt DateTime      @default(now())
+
+  @@index([status, createdAt])
+}
+
+/// Editable single values (phone, email, location, …).
+model SiteSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
