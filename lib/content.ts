@@ -13,9 +13,9 @@ export const brand = {
 export const nav = [
   { href: "#top", label: "الرئيسية" },
   { href: "#services", label: "الخدمات" },
-  { href: "#marketing", label: "خدمات التسويق والإعلان" },
-  { href: "#about", label: "حول" },
-  { href: "#contact", label: "الاتصال" },
+  { href: "#work", label: "الأعمال" },
+  { href: "#process", label: "كيف نعمل" },
+  { href: "#contact", label: "تواصل معنا" },
 ] as const;
 
 export type Service = {
@@ -80,12 +80,12 @@ export const marketing = {
     "الحملات الإعلانية على محركات البحث ووسائل التواصل الاجتماعي",
   ],
   album: [
-    { src: "/media/album-1.webp", w: 880, h: 560, alt: "أداة التسويق الفضائي: لإيصال رسالتك لكل من تريد فوق الكوكب" },
-    { src: "/media/album-2.webp", w: 1600, h: 900, alt: "نقدم لكم خدمات التسويق الإلكتروني" },
-    { src: "/media/album-3.webp", w: 1600, h: 900, alt: "الوصول الكامل للفئة المستهدفة بكل دقة: خطط استهداف مدروسة وفعالة" },
-    { src: "/media/album-4.webp", w: 1600, h: 900, alt: "اعرض إعلانك في كافة قناة ومواقع التواصل الاجتماعي" },
-    { src: "/media/album-5.webp", w: 1600, h: 900, alt: "خدماتنا: الاستشارات التسويقية، خطط التسويق، كتابة المحتوى، والحملات الإعلانية" },
-    { src: "/media/album-6.webp", w: 1600, h: 900, alt: "لطلب خدماتنا: alienz.tech وفيسبوك Alienz Team وإنستغرام alienz_ly" },
+    { title: "التسويق الفضائي", src: "/media/album-1.webp", w: 880, h: 560, alt: "أداة التسويق الفضائي: لإيصال رسالتك لكل من تريد فوق الكوكب" },
+    { title: "خدمات التسويق الإلكتروني", src: "/media/album-2.webp", w: 1600, h: 900, alt: "نقدم لكم خدمات التسويق الإلكتروني" },
+    { title: "الوصول للفئة المستهدفة", src: "/media/album-3.webp", w: 1600, h: 900, alt: "الوصول الكامل للفئة المستهدفة بكل دقة: خطط استهداف مدروسة وفعالة" },
+    { title: "إعلانك على كل المنصات", src: "/media/album-4.webp", w: 1600, h: 900, alt: "اعرض إعلانك في كافة قناة ومواقع التواصل الاجتماعي" },
+    { title: "باقة الخدمات التسويقية", src: "/media/album-5.webp", w: 1600, h: 900, alt: "خدماتنا: الاستشارات التسويقية، خطط التسويق، كتابة المحتوى، والحملات الإعلانية" },
+    { title: "اطلب خدماتنا", src: "/media/album-6.webp", w: 1600, h: 900, alt: "لطلب خدماتنا: alienz.tech وفيسبوك Alienz Team وإنستغرام alienz_ly" },
   ],
 };
 
@@ -117,4 +117,115 @@ export const contact = {
     { label: "إنستغرام", href: "https://www.instagram.com/alienz_ly/", icon: "instagram" },
     { label: "لينكدإن", href: "https://www.linkedin.com/in/alienz-team-21ab75236", icon: "linkedin" },
   ] as const,
+};
+
+export const hero = {
+  badge: "فريق تقني من طرابلس، ليبيا",
+  lead:
+    "مجموعة من الشباب المحترف جمعنا حب الفن والعمل. نبني البرمجيات وأنظمة الذكاء الاصطناعي، نصمم الهويات، ونطلق الحملات التي تصل لجمهورك.",
+  primary: "ابدأ مشروعك",
+  secondary: "تصفّح الأعمال",
+  // Tripoli, Libya.
+  coords: "32.8872° N  13.1913° E",
+};
+
+/** The four service pillars shown as the bento grid, plus media production.
+ *  `slugs` pull the matching services from the database into each tile. */
+export type Pillar = {
+  id: string;
+  title: string;
+  en: string;
+  blurb: string;
+  slugs: string[];
+  points?: readonly string[];
+  image?: string;
+};
+
+export const pillars: Pillar[] = [
+  {
+    id: "software",
+    title: "هندسة البرمجيات",
+    en: "Software Engineering",
+    blurb:
+      "مواقع وتطبيقات ولوحات تحكم مبنية لتكبر مع عملك: كود نظيف، أداء سريع على كل الشاشات، ونشر على بنية سحابية.",
+    slugs: ["web", "mobile"],
+    image: "/media/svc-web.webp",
+  },
+  {
+    id: "ai",
+    title: "أنظمة الذكاء الاصطناعي والوكلاء المتعددون",
+    en: "AI Systems & Multi-Agent",
+    blurb:
+      "مساعدون أذكياء يفهمون بيانات شركتك، ووكلاء يتعاونون لإنجاز المهام المتكررة بدلاً من فريقك.",
+    slugs: [],
+    points: [
+      "مساعد محادثة بالعربية على موقعك أو واتساب",
+      "أتمتة سير العمل بين أدواتك",
+      "ربط النماذج اللغوية ببيانات شركتك",
+    ],
+  },
+  {
+    id: "brand",
+    title: "تجربة المستخدم والهوية البصرية",
+    en: "UI/UX & Brand Identity",
+    blurb: "واجهات سهلة الاستخدام، وهوية تعرّف بعلامتك من الشعار إلى الفيديو المتحرك.",
+    slugs: ["identity", "motion"],
+    image: "/media/svc-identity.webp",
+  },
+  {
+    id: "marketing",
+    title: "التسويق والحملات الرقمية",
+    en: "Marketing & Digital Campaigns",
+    blurb: marketing.intro,
+    slugs: [],
+    points: marketing.offerings,
+  },
+  {
+    id: "production",
+    title: "الإنتاج المرئي والصوتي",
+    en: "Media Production",
+    blurb: "تصوير ومونتاج وتسجيل صوتي بجودة استوديو، جاهز للنشر.",
+    slugs: ["photo", "audio"],
+    image: "/media/svc-photo.webp",
+  },
+];
+
+/** Portfolio categories, matched against a project's title and alt text so
+ *  admins can steer the filter by wording alone (no schema change). First
+ *  match wins; anything unmatched falls into "campaigns". */
+export const projectCategories = [
+  { id: "software", label: "برمجيات", match: /موقع|تطبيق|برمج|متجر|لوحة تحكم/ },
+  { id: "brand", label: "هوية بصرية", match: /هوية|شعار|مطبوع|موشن|فيديو|تصوير/ },
+  { id: "social", label: "إعلانات التواصل", match: /التواصل|فيسبوك|إنستغرام|سوشيال|إعلانك/ },
+  { id: "strategy", label: "استراتيجية واستهداف", match: /استهداف|استشار|خطط|خطة/ },
+  { id: "campaigns", label: "حملات تسويقية", match: /./ },
+] as const;
+
+export const method = {
+  title: "كيف نعمل",
+  intro: about.reassurance,
+  steps: [
+    {
+      title: "نفهم فكرتك",
+      body: "جلسة قصيرة نحدد فيها الهدف والجمهور والميزانية، حتى لو كانت الفكرة غير واضحة بعد.",
+    },
+    {
+      title: "نخطط ونصمم",
+      body: "خريطة للموقع أو الحملة ونماذج أولية تراها وتعلّق عليها قبل أن نبدأ التنفيذ.",
+    },
+    {
+      title: "نبني ونختبر",
+      body: "تنفيذ على مراحل قصيرة مع نسخة تجريبية تتابع فيها التقدم أولاً بأول.",
+    },
+    {
+      title: "نطلق ونتابع",
+      body: "نشر وقياس للنتائج، ودعم بعد الإطلاق لأي تعديل تحتاجه.",
+    },
+  ],
+  stack: [
+    { group: "البرمجة", tools: ["Next.js", "React", "TypeScript", "Node.js", "Flutter", "PostgreSQL", "Cloudflare"] },
+    { group: "الذكاء الاصطناعي", tools: ["Claude", "OpenAI", "n8n", "RAG"] },
+    { group: "التصميم والإنتاج", tools: ["Figma", "Illustrator", "After Effects", "Premiere Pro"] },
+    { group: "التسويق", tools: ["Meta Ads", "Google Ads", "Analytics"] },
+  ],
 };

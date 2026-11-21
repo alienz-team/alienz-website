@@ -4,7 +4,7 @@ import { socialIcons } from "./Icons";
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-line bg-orbit">
+    <footer className="border-t border-line bg-orbit/60">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex items-center gap-4">

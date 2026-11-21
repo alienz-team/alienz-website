@@ -1,25 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Cairo, IBM_Plex_Sans_Arabic, Chakra_Petch } from "next/font/google";
+import { Cairo, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
 const cairo = Cairo({
   subsets: ["arabic", "latin"],
-  weight: ["600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700", "800", "900"],
   variable: "--font-cairo",
   display: "swap",
 });
 
-const plexArabic = IBM_Plex_Sans_Arabic({
-  subsets: ["arabic", "latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-plex-arabic",
-  display: "swap",
-});
-
-const chakra = Chakra_Petch({
+// Latin technical labels: English service names, figures, coordinates.
+const grotesk = Space_Grotesk({
   subsets: ["latin"],
-  weight: ["600", "700"],
-  variable: "--font-chakra",
+  weight: ["500", "700"],
+  variable: "--font-grotesk",
   display: "swap",
 });
 
@@ -39,7 +33,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#140c33",
+  themeColor: "#07090f",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -47,7 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="ar"
       dir="rtl"
-      className={`${cairo.variable} ${plexArabic.variable} ${chakra.variable}`}
+      className={`${cairo.variable} ${grotesk.variable}`}
     >
       <body className="min-h-dvh antialiased">
         <a

@@ -37,7 +37,7 @@ export function SiteHeader() {
     <header
       className={`fixed inset-x-0 top-0 z-40 transition-[background-color,border-color,backdrop-filter] duration-300 ${
         scrolled || open
-          ? "border-b border-line/70 bg-space/85 backdrop-blur-md"
+          ? "border-b border-line/70 bg-space/75 backdrop-blur-xl"
           : "border-b border-transparent bg-transparent"
       }`}
     >
@@ -66,13 +66,13 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-3">
           {/* Status pill, adapted from Kerrfield's "All systems normal" chip */}
-          <span className="hidden items-center gap-2 rounded-full border border-line px-3 py-1 text-sm text-haze xl:inline-flex">
-            <span className="h-2 w-2 rounded-full bg-alien animate-pulse-dot" aria-hidden />
+          <span className="hidden items-center gap-2 rounded-full border border-alien/30 bg-alien/[0.06] px-3 py-1 text-sm text-starlight xl:inline-flex">
+            <span className="h-2 w-2 rounded-full bg-alien-bright animate-pulse-dot" aria-hidden />
             {contact.location}
           </span>
           <a
             href="#contact"
-            className="chamfer-sm hidden bg-alien px-5 py-2.5 text-sm font-bold text-space transition-colors hover:bg-starlight sm:inline-block"
+            className="chamfer-sm hidden bg-alien px-5 py-2.5 text-sm font-bold text-space transition-colors hover:bg-alien-bright sm:inline-block"
           >
             {contact.cta}
           </a>

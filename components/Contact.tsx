@@ -2,11 +2,18 @@
 
 import { startTransition, useActionState, useEffect, useRef, type FormEvent } from "react";
 import { submitInquiry, type InquiryState } from "@/app/actions/inquiry";
-import { contact as staticContact } from "@/lib/content";
+import { about, contact as staticContact, pillars } from "@/lib/content";
 import type { ContactView } from "@/lib/site-data";
-import { Mail, Phone, Pin, socialIcons } from "./Icons";
+import { ArrowLeft, Mail, Phone, Pin, WhatsApp, socialIcons } from "./Icons";
 
 const initial: InquiryState = { status: "idle" };
+
+/** wa.me link built from the phone setting, so the admin edits one value. */
+function whatsappHref(phoneHref: string) {
+  const digits = phoneHref.replace(/\D/g, "");
+  const text = encodeURIComponent("مرحباً ALIENZ TEAM، أريد استشارة بخصوص مشروع.");
+  return digits.length >= 8 ? `https://wa.me/${digits}?text=${text}` : null;
+}
 
 export function Contact({ info, serviceTitles }: { info: ContactView; serviceTitles: string[] }) {
   const [state, action, pending] = useActionState(submitInquiry, initial);
@@ -30,40 +37,59 @@ export function Contact({ info, serviceTitles }: { info: ContactView; serviceTit
     }
   }, [state]);
 
+  const wa = whatsappHref(info.phoneHref);
   const field =
-    "mt-2 block w-full border border-line bg-space px-4 py-3 text-starlight placeholder:text-haze/60 transition-colors focus:border-alien focus:outline-none aria-[invalid=true]:border-red-400";
+    "mt-2 block w-full rounded-md border border-white/10 bg-space/80 px-4 py-3 text-starlight placeholder:text-haze/60 transition-colors focus:border-alien focus:outline-none aria-[invalid=true]:border-red-400";
 
   return (
-    <section id="contact" aria-labelledby="contact-title" className="py-20 sm:py-28">
-      <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-8">
+    <section id="contact" aria-labelledby="contact-title" className="relative overflow-hidden border-t border-line py-20 sm:py-28">
+      <div aria-hidden className="pointer-events-none absolute -bottom-40 left-[-10%] h-[32rem] w-[32rem] rounded-full bg-alien/10 blur-3xl" />
+      <div className="relative mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-8">
         <div className="lg:col-span-5">
-          <h2 id="contact-title" className="text-4xl font-black sm:text-5xl">
-            {staticContact.title}
+          <p dir="ltr" className="text-right font-latin text-sm font-medium text-alien">Free consultation</p>
+          <h2 id="contact-title" className="mt-2 text-4xl font-black sm:text-5xl">
+            احكِ لنا عن مشروعك
           </h2>
-          <p className="mt-4 max-w-md text-lg text-haze">
-            حائر في أفكارك؟ راسلنا أو اتصل بنا، ونساعدك تحدد ما تحتاجه.
-          </p>
+          <p className="mt-5 max-w-md text-lg leading-loose text-haze">{about.reassurance}</p>
 
-          <ul className="mt-10 space-y-1">
-            <li className="flex items-center gap-4 border-b border-line py-4">
+          {wa && (
+            <a
+              href={wa}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="chamfer group mt-8 flex items-center justify-between gap-4 bg-alien px-6 py-5 text-space transition-colors hover:bg-alien-bright"
+            >
+              <span className="flex items-center gap-4">
+                <WhatsApp className="h-7 w-7" />
+                <span>
+                  <span className="block text-lg font-black">راسلنا على واتساب</span>
+                  <span className="block text-sm font-semibold text-space/75">أسرع طريقة للوصول إلينا</span>
+                </span>
+              </span>
+              <ArrowLeft className="transition-transform group-hover:-translate-x-1" />
+            </a>
+          )}
+
+          <ul className="mt-6 grid gap-3">
+            <li>
+              <a href={info.phoneHref} className="glass flex items-center gap-4 rounded-md px-5 py-4 transition-colors hover:border-alien/40">
+                <Phone className="text-alien" />
+                <span dir="ltr" className="font-latin text-lg">{info.phoneDisplay}</span>
+              </a>
+            </li>
+            <li>
+              <a href={`mailto:${info.email}`} className="glass flex items-center gap-4 rounded-md px-5 py-4 break-all transition-colors hover:border-alien/40">
+                <Mail className="shrink-0 text-alien" />
+                <span dir="ltr" className="font-latin text-lg">{info.email}</span>
+              </a>
+            </li>
+            <li className="glass flex items-center gap-4 rounded-md px-5 py-4">
               <Pin className="text-alien" />
               <span className="text-lg">{info.location}</span>
             </li>
-            <li className="border-b border-line">
-              <a href={info.phoneHref} className="flex items-center gap-4 py-4 text-lg hover:text-alien">
-                <Phone className="text-alien" />
-                <span dir="ltr" className="font-latin">{info.phoneDisplay}</span>
-              </a>
-            </li>
-            <li className="border-b border-line">
-              <a href={`mailto:${info.email}`} className="flex items-center gap-4 py-4 text-lg break-all hover:text-alien">
-                <Mail className="shrink-0 text-alien" />
-                <span dir="ltr" className="font-latin">{info.email}</span>
-              </a>
-            </li>
           </ul>
 
-          <ul className="mt-8 flex gap-3" aria-label="حساباتنا على مواقع التواصل">
+          <ul className="mt-6 flex gap-2" aria-label="حساباتنا على مواقع التواصل">
             {staticContact.socials.map((s) => {
               const Icon = socialIcons[s.icon];
               return (
@@ -73,7 +99,7 @@ export function Contact({ info, serviceTitles }: { info: ContactView; serviceTit
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={s.label}
-                    className="chamfer-sm inline-flex h-12 w-12 items-center justify-center bg-orbit text-starlight transition-colors hover:bg-alien hover:text-space"
+                    className="chamfer-sm inline-flex h-12 w-12 items-center justify-center border border-line bg-orbit text-starlight transition-colors hover:border-alien hover:text-alien"
                   >
                     <Icon />
                   </a>
@@ -84,7 +110,7 @@ export function Contact({ info, serviceTitles }: { info: ContactView; serviceTit
         </div>
 
         <div className="lg:col-span-7">
-          <form ref={formRef} onSubmit={onSubmit} noValidate className="chamfer relative border border-line bg-orbit p-6 sm:p-10">
+          <form ref={formRef} onSubmit={onSubmit} noValidate data-spot className="glass spot hud relative rounded-lg p-6 sm:p-10">
             {/* Honeypot for bots: hidden from people and assistive tech. */}
             <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
               <label htmlFor="website">اترك هذا الحقل فارغاً</label>
@@ -126,15 +152,21 @@ export function Contact({ info, serviceTitles }: { info: ContactView; serviceTit
               <label htmlFor="service" className="font-semibold">الخدمة</label>
               <select id="service" name="service" className={field} defaultValue="">
                 <option value="">لست متأكداً بعد</option>
-                {serviceTitles.map((t) => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-                <option value="خدمات التسويق والإعلان">خدمات التسويق والإعلان</option>
+                <optgroup label="المجالات">
+                  {pillars.map((p) => (
+                    <option key={p.id} value={p.title}>{p.title}</option>
+                  ))}
+                </optgroup>
+                <optgroup label="خدمات محددة">
+                  {serviceTitles.map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </optgroup>
               </select>
             </div>
 
             <div className="mt-6">
-              <label htmlFor="message" className="font-semibold">فكرتك</label>
+              <label htmlFor="message" className="font-semibold">صف مشروعك</label>
               <textarea
                 id="message"
                 name="message"
@@ -152,10 +184,10 @@ export function Contact({ info, serviceTitles }: { info: ContactView; serviceTit
               <button
                 type="submit"
                 disabled={pending}
-                className="chamfer-sm inline-flex items-center justify-center gap-2 bg-alien px-8 py-4 text-lg font-bold text-space transition-colors hover:bg-starlight disabled:cursor-wait disabled:opacity-70"
+                className="chamfer-sm inline-flex items-center justify-center gap-2 bg-alien px-8 py-4 text-lg font-bold text-space transition-colors hover:bg-alien-bright disabled:cursor-wait disabled:opacity-70"
               >
                 <Mail />
-                {pending ? "جارٍ الإرسال…" : staticContact.cta}
+                {pending ? "جارٍ الإرسال…" : "أرسل طلب الاستشارة"}
               </button>
               <p
                 role="status"

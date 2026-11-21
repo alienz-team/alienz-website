@@ -1,27 +1,26 @@
 @import "tailwindcss";
 
-/* Tokens drawn from the ALIENZ brand: the logo's alien green and the
-   space-purple of the team's own campaign artwork. */
+/* ALIENZ obsidian palette. Token names are shared with /admin, so the
+   dashboard picks up the same surfaces automatically. */
 @theme {
-  --color-space: #140c33;
-  --color-orbit: #1e1547;
-  --color-nebula: #2a1e5e;
-  --color-line: #3a2e78;
-  --color-alien: #3fe53b;
-  --color-alien-deep: #1f8f1c;
-  --color-starlight: #f1edff;
-  --color-haze: #b3abdc;
-  --color-lavender: #efebfa;
-  --color-ink: #1b1240;
-  --color-ink-soft: #4a4072;
+  --color-space: #07090f;      /* page */
+  --color-orbit: #0b0e17;      /* raised surface */
+  --color-nebula: #121826;     /* hover / inset */
+  --color-line: #1d2536;       /* hairlines */
+  --color-alien: #10b981;      /* primary accent */
+  --color-alien-bright: #00ff66; /* glow, live indicators only */
+  --color-alien-deep: #0a7a55;
+  --color-starlight: #e9eef5;  /* body text */
+  --color-haze: #8b97aa;       /* secondary text, 6.4:1 on space */
 
   --font-display: var(--font-cairo), system-ui, sans-serif;
-  --font-sans: var(--font-plex-arabic), var(--font-cairo), system-ui, sans-serif;
-  --font-latin: var(--font-chakra), var(--font-cairo), sans-serif;
+  --font-sans: var(--font-cairo), system-ui, sans-serif;
+  --font-latin: var(--font-grotesk), var(--font-cairo), sans-serif;
 
-  --animate-marquee: marquee 38s linear infinite;
+  --animate-marquee: marquee 44s linear infinite;
   --animate-rise: rise 0.8s cubic-bezier(0.2, 0.7, 0.1, 1) both;
   --animate-pulse-dot: pulse-dot 2.4s ease-out infinite;
+  --animate-scan: scan 5s linear infinite;
 
   @keyframes marquee {
     from { transform: translateX(0); }
@@ -32,8 +31,12 @@
     to { opacity: 1; transform: translateY(0); filter: blur(0); }
   }
   @keyframes pulse-dot {
-    0% { box-shadow: 0 0 0 0 rgb(63 229 59 / 0.55); }
-    70%, 100% { box-shadow: 0 0 0 9px rgb(63 229 59 / 0); }
+    0% { box-shadow: 0 0 0 0 rgb(0 255 102 / 0.55); }
+    70%, 100% { box-shadow: 0 0 0 9px rgb(0 255 102 / 0); }
+  }
+  @keyframes scan {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(100%); }
   }
 }
 
@@ -42,6 +45,7 @@
     scroll-behavior: smooth;
     scroll-padding-top: 5.5rem;
     -webkit-text-size-adjust: 100%;
+    color-scheme: dark;
   }
   body {
     background: var(--color-space);
@@ -67,8 +71,7 @@
 }
 
 @layer components {
-  /* Chamfered frame, borrowed from Hexwall's cut-corner panels. Mirrored
-     for RTL so the cut sits on the leading (right) top corner. */
+  /* Cut-corner frames (Hexwall). The cut sits on the leading top corner. */
   .chamfer {
     clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px));
   }
@@ -76,14 +79,56 @@
     clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
   }
 
-  /* Faint star grid behind dark sections — a quiet nod to the campaign art. */
-  .starfield {
-    background-image:
-      radial-gradient(1px 1px at 20% 30%, rgb(241 237 255 / 0.55) 50%, transparent 51%),
-      radial-gradient(1px 1px at 70% 80%, rgb(241 237 255 / 0.4) 50%, transparent 51%),
-      radial-gradient(1.5px 1.5px at 85% 15%, rgb(241 237 255 / 0.5) 50%, transparent 51%),
-      radial-gradient(1px 1px at 40% 65%, rgb(241 237 255 / 0.3) 50%, transparent 51%);
-    background-size: 260px 260px;
+  /* Honeycomb lattice. Tiles seamlessly at 56x100. */
+  .hexgrid {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='%2310B981' stroke-width='1'/%3E%3Cpath d='M28 0L28 34L0 50L0 84L28 100L56 84L56 50L28 34' fill='none' stroke='%2310B981' stroke-width='1'/%3E%3C/svg%3E");
+    background-size: 56px 100px;
+  }
+  /* The lit layer of the hero lattice follows the pointer (--mx / --my
+     are set by PointerGlow). */
+  .hexgrid-lit {
+    mask-image: radial-gradient(circle 280px at var(--mx, 30%) var(--my, 40%), #000 0%, transparent 70%);
+  }
+
+  /* Glass bento surface (EmpireAI). */
+  .glass {
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.045), rgb(255 255 255 / 0.012));
+    border: 1px solid rgb(255 255 255 / 0.07);
+    backdrop-filter: blur(14px);
+  }
+
+  /* Pointer spotlight for cards marked data-spot. */
+  .spot { position: relative; isolation: isolate; }
+  .spot::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(16 185 129 / 0.13), transparent 60%);
+  }
+  .spot:hover::before { opacity: 1; }
+
+  /* HUD corner brackets. Color comes from --hud. */
+  .hud {
+    --hud: rgb(16 185 129 / 0.7);
+    --len: 14px;
+    background:
+      linear-gradient(var(--hud), var(--hud)) top left / var(--len) 1px no-repeat,
+      linear-gradient(var(--hud), var(--hud)) top left / 1px var(--len) no-repeat,
+      linear-gradient(var(--hud), var(--hud)) top right / var(--len) 1px no-repeat,
+      linear-gradient(var(--hud), var(--hud)) top right / 1px var(--len) no-repeat,
+      linear-gradient(var(--hud), var(--hud)) bottom left / var(--len) 1px no-repeat,
+      linear-gradient(var(--hud), var(--hud)) bottom left / 1px var(--len) no-repeat,
+      linear-gradient(var(--hud), var(--hud)) bottom right / var(--len) 1px no-repeat,
+      linear-gradient(var(--hud), var(--hud)) bottom right / 1px var(--len) no-repeat;
+  }
+
+  /* Faint horizontal scanlines over imagery. */
+  .scanlines {
+    background-image: repeating-linear-gradient(0deg, rgb(7 9 15 / 0.35) 0 1px, transparent 1px 3px);
   }
 }
 

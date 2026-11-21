@@ -1,7 +1,8 @@
-import { About } from "@/components/About";
 import { Contact } from "@/components/Contact";
 import { Hero } from "@/components/Hero";
-import { Marketing } from "@/components/Marketing";
+import { Method } from "@/components/Method";
+import { PointerGlow } from "@/components/PointerGlow";
+import { Portfolio } from "@/components/Portfolio";
 import { Services } from "@/components/Services";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -17,13 +18,14 @@ export default async function Home() {
 
   return (
     <>
+      <PointerGlow />
       <SiteHeader />
       <main id="main">
-        <Hero />
+        <Hero servicesCount={services.length} projectsCount={projects.length} />
         <Ticker services={services} />
         <Services services={services} />
-        <Marketing projects={projects} />
-        <About />
+        <Portfolio projects={projects} />
+        <Method />
         <Contact info={contact} serviceTitles={services.map((s) => s.title)} />
       </main>
       <SiteFooter />
