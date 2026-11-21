@@ -33,8 +33,8 @@ Set `DATABASE_URL`, `DIRECT_URL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` and
 
 | Script | What it does |
 | --- | --- |
-| `dev` / `build` / `start` | Next.js |
+| `build` | `next build` + OpenNext bundle into `.open-next/` (what Cloudflare runs) |
+| `build:next` / `dev` / `start` | Next.js only |
 | `lint` | ESLint |
 | `db:generate` / `db:push` / `db:seed` | Prisma |
-| `cf:build` | OpenNext build into `.open-next/` |
 | `preview` / `deploy` / `upload` | OpenNext + Wrangler |
