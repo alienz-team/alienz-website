@@ -8,6 +8,7 @@ import { Services } from "@/components/Services";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Ticker } from "@/components/Ticker";
+import { pillars } from "@/lib/content";
 import { getSiteData } from "@/lib/site-data";
 
 // Rendered per request so admin edits show up immediately; no ISR cache
@@ -23,7 +24,7 @@ export default async function Home() {
       <MotionDirector />
       <SiteHeader />
       <main id="main">
-        <Hero servicesCount={services.length} projectsCount={projects.length} />
+        <Hero servicesCount={pillars.length} projectsCount={projects.length} />
         <Ticker services={services} />
         <Services services={services} />
         <Portfolio projects={projects} />

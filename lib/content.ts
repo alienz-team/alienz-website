@@ -33,44 +33,69 @@ export const services: Service[] = [
     title: "تصميم وبرمجة المواقع الإلكترونية",
     description:
       "مواقع تعريفية ومتاجر ولوحات تحكم، نصممها ونبرمجها لتعمل بسرعة على كل الشاشات.",
-    image: "/media/svc-web.webp",
+    image: "/media/cyber/software.svg",
   },
   {
     id: "mobile",
     title: "تصميم وبرمجة تطبيقات الموبايل",
     description:
       "تطبيقات لأندرويد وiOS، من رسم الواجهات وحتى النشر على المتاجر.",
-    image: "/media/svc-mobile.webp",
+    image: "/media/cyber/software.svg",
   },
   {
     id: "identity",
     title: "تصميم الهوية البصرية والمطبوعات",
     description:
       "شعار وألوان وخطوط تعرّف بعلامتك، مع كل ما تحتاجه من مطبوعات جاهزة للطباعة.",
-    image: "/media/svc-identity.webp",
+    image: "/media/cyber/brand.svg",
   },
   {
     id: "motion",
     title: "تصميم الموشن جرافيك والفيديو الدعائي",
     description:
       "فيديوهات قصيرة متحركة تشرح فكرتك أو تروّج لمنتجك على الشاشات ومواقع التواصل.",
-    image: "/media/svc-motion.webp",
+    image: "/media/cyber/motion.svg",
   },
   {
     id: "photo",
     title: "التصوير والمونتاج الاحترافي",
     description:
       "تصوير منتجات وفعاليات ومقابلات، ثم مونتاج وتلوين حتى تصبح المادة جاهزة للنشر.",
-    image: "/media/svc-photo.webp",
+    image: "/media/cyber/photo.svg",
   },
   {
     id: "audio",
     title: "التسجيل الصوتي الاحترافي",
     description:
       "تعليق صوتي وتسجيل إعلانات بجودة استوديو، مع المعالجة والمكساج.",
-    image: "/media/svc-audio.webp",
+    image: "/media/cyber/audio.svg",
+  },
+  {
+    id: "ai",
+    title: "حلول الذكاء الاصطناعي",
+    description:
+      "مساعدون أذكياء يفهمون بيانات شركتك، ووكلاء يتعاونون لإنجاز المهام المتكررة بدلاً من فريقك.",
+    image: "/media/cyber/ai.svg",
+  },
+  {
+    id: "marketing",
+    title: "خدمات التسويق",
+    description:
+      "الوصول الكامل للفئة المستهدفة بكل دقة، بخطط استهداف مدروسة وحملات على محركات البحث ووسائل التواصل.",
+    image: "/media/cyber/marketing.svg",
   },
 ];
+
+/** Service images from before the cyber visuals; the seed swaps any row still
+ *  on one of these for its new visual (admin-chosen images are left alone). */
+export const legacyServiceImages: Record<string, string> = {
+  web: "/media/svc-web.webp",
+  mobile: "/media/svc-mobile.webp",
+  identity: "/media/svc-identity.webp",
+  motion: "/media/svc-motion.webp",
+  photo: "/media/svc-photo.webp",
+  audio: "/media/svc-audio.webp",
+};
 
 export const marketing = {
   title: "خدمات التسويق والإعلان",
@@ -88,6 +113,7 @@ export const marketing = {
     { title: "إعلانك على كل المنصات", src: "/media/album-4.webp", w: 1600, h: 900, alt: "اعرض إعلانك في كافة قناة ومواقع التواصل الاجتماعي" },
     { title: "باقة الخدمات التسويقية", src: "/media/album-5.webp", w: 1600, h: 900, alt: "خدماتنا: الاستشارات التسويقية، خطط التسويق، كتابة المحتوى، والحملات الإعلانية" },
     { title: "اطلب خدماتنا", src: "/media/album-6.webp", w: 1600, h: 900, alt: "لطلب خدماتنا: alienz.tech وفيسبوك Alienz Team وإنستغرام alienz_ly" },
+    { title: "موقع ALIENZ TECH", src: "/media/album-7.webp", w: 1600, h: 893, alt: "تصميم وبرمجة موقع ALIENZ TECH: واجهة سايبربانك بفضائيين يبرمجون على شاشات هولوغرافية" },
   ],
 };
 
@@ -131,16 +157,20 @@ export const hero = {
   coords: "32.8872° N  13.1913° E",
 };
 
-/** The four service pillars shown as the bento grid, plus media production.
- *  `slugs` pull the matching services from the database into each tile. */
+/** The seven service cards of the bento grid. `slugs` pull the matching
+ *  services from the database into each card; a single-service card shows
+ *  that service's (admin-editable) description as its blurb. */
 export type Pillar = {
   id: string;
   title: string;
   en: string;
   blurb: string;
   slugs: string[];
+  /** Neon HUD visual at the top of the card (static SVG). */
+  image: string;
   points?: readonly string[];
-  image?: string;
+  /** Services added later in /admin with no card of their own land here. */
+  catchAll?: boolean;
   /** Rolling odometer readout. Showcase figures: replace with real numbers. */
   metric?: { value: string; label: string };
   /** Radial gauge, 0-100. */
@@ -155,49 +185,67 @@ export const pillars: Pillar[] = [
     blurb:
       "مواقع وتطبيقات ولوحات تحكم مبنية لتكبر مع عملك: كود نظيف، أداء سريع على كل الشاشات، ونشر على بنية سحابية.",
     slugs: ["web", "mobile"],
-    image: "/media/svc-web.webp",
+    image: "/media/cyber/software.svg",
     metric: { value: "4.2B", label: "طلب شهرياً تتحمّله البنية السحابية" },
     gauge: { pct: 99.9, label: "جاهزية الخوادم" },
   },
   {
     id: "ai",
-    title: "أنظمة الذكاء الاصطناعي",
-    en: "AI Systems & Multi-Agent",
+    title: "حلول الذكاء الاصطناعي",
+    en: "AI Solutions",
     blurb:
       "مساعدون أذكياء يفهمون بيانات شركتك، ووكلاء يتعاونون لإنجاز المهام المتكررة بدلاً من فريقك.",
-    slugs: [],
+    slugs: ["ai"],
+    image: "/media/cyber/ai.svg",
     points: [
       "مساعد محادثة بالعربية على موقعك أو واتساب",
       "أتمتة سير العمل بين أدواتك",
       "ربط النماذج اللغوية ببيانات شركتك",
     ],
-    metric: { value: "24/7", label: "وكلاء يعملون دون توقف" },
     gauge: { pct: 87, label: "مهام مؤتمتة" },
   },
   {
     id: "brand",
     title: "الهوية وتجربة المستخدم",
     en: "UI/UX & Brand Identity",
-    blurb: "واجهات سهلة الاستخدام، وهوية تعرّف بعلامتك من الشعار إلى الفيديو المتحرك.",
-    slugs: ["identity", "motion"],
-    image: "/media/svc-identity.webp",
-    metric: { value: "360°", label: "هوية متكاملة من الشعار إلى الحركة" },
+    blurb: "واجهات سهلة الاستخدام، وهوية تعرّف بعلامتك من الشعار إلى المطبوعات.",
+    slugs: ["identity"],
+    image: "/media/cyber/brand.svg",
+  },
+  {
+    id: "motion",
+    title: "الموشن جرافيك والفيديو",
+    en: "Motion Graphics",
+    blurb: "فيديوهات قصيرة متحركة تشرح فكرتك أو تروّج لمنتجك.",
+    slugs: ["motion"],
+    image: "/media/cyber/motion.svg",
+  },
+  {
+    id: "photo",
+    title: "التصوير والمونتاج",
+    en: "Photo & Video Editing",
+    blurb: "تصوير منتجات وفعاليات، ثم مونتاج وتلوين جاهز للنشر.",
+    slugs: ["photo"],
+    image: "/media/cyber/photo.svg",
+  },
+  {
+    id: "audio",
+    title: "التسجيل الصوتي",
+    en: "Audio Recording",
+    blurb: "تعليق صوتي وتسجيل إعلانات بجودة استوديو.",
+    slugs: ["audio"],
+    image: "/media/cyber/audio.svg",
+    catchAll: true,
   },
   {
     id: "marketing",
-    title: "التسويق والحملات الرقمية",
-    en: "Marketing & Digital Campaigns",
+    title: "خدمات التسويق",
+    en: "Marketing Services",
     blurb: marketing.intro,
-    slugs: [],
+    slugs: ["marketing"],
+    image: "/media/cyber/marketing.svg",
     points: marketing.offerings,
-  },
-  {
-    id: "production",
-    title: "الإنتاج المرئي والصوتي",
-    en: "Media Production",
-    blurb: "تصوير ومونتاج وتسجيل صوتي بجودة استوديو، جاهز للنشر.",
-    slugs: ["photo", "audio"],
-    image: "/media/svc-photo.webp",
+    metric: { value: "360°", label: "حضور على كل المنصات" },
   },
 ];
 

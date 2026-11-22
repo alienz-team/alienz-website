@@ -17,6 +17,17 @@ function categorize(p: ProjectView): CategorizedProject {
   return { ...p, title, category: c.id, categoryLabel: c.label };
 }
 
+/** The first card is 2x2 on lg (full-row on sm) when there are 3+ works.
+ *  The last card stretches over whatever columns its row leaves empty, so
+ *  7 works fill the lg grid exactly: 2x2 + 5 singles + one full-width. */
+function tailSpan(n: number): { cls: string; wide: boolean } {
+  if (n < 2) return { cls: "", wide: false };
+  const lgRem = ((n > 2 ? 4 : 1) + (n - 1)) % 3; // cards in the last lg row
+  const smOdd = ((n > 2 ? 2 : 1) + (n - 1)) % 2 === 1;
+  const lg = lgRem === 1 ? "lg:col-span-3" : lgRem === 2 ? "lg:col-span-2" : smOdd ? "lg:col-span-1" : "";
+  return { cls: `${smOdd ? "sm:col-span-2" : ""} ${lg}`.trim(), wide: lgRem !== 0 };
+}
+
 export function Portfolio({ projects }: { projects: ProjectView[] }) {
   const all = useMemo(() => projects.map(categorize), [projects]);
   const filters = useMemo(
@@ -29,6 +40,7 @@ export function Portfolio({ projects }: { projects: ProjectView[] }) {
 
   if (all.length === 0) return null;
   const visible = filter === "all" ? all : all.filter((p) => p.category === filter);
+  const tail = tailSpan(visible.length);
 
   // Return focus to the card that opened the dialog, even after stepping.
   const close = () => {
@@ -42,8 +54,16 @@ export function Portfolio({ projects }: { projects: ProjectView[] }) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-2xl">
-            <p dir="ltr" className="text-right font-latin text-sm font-medium text-alien">Selected work</p>
-            <h2 id="work-title" className="mt-2 text-4xl font-black sm:text-5xl">من أعمالنا</h2>
+            <p dir="ltr" className="text-right font-latin text-sm font-medium text-alien">
+              Selected work <span className="text-haze">/ {String(all.length).padStart(2, "0")}</span>
+            </p>
+            <h2 id="work-title" className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-2 text-4xl font-black sm:text-5xl">
+              من أعمالنا
+              <span className="inline-flex items-center gap-2 rounded-full border border-alien/30 bg-alien/[0.06] px-3 py-1 text-sm font-semibold text-alien-bright">
+                <span className="h-1.5 w-1.5 rounded-full bg-alien-bright animate-pulse-dot" aria-hidden />
+                <span className="font-latin">{all.length}</span> أعمال منشورة
+              </span>
+            </h2>
             <p className="mt-4 text-lg text-haze">حملات وتصاميم نفذناها لعملائنا ولعلامتنا. اختر عملاً لتراه كاملاً.</p>
           </div>
 
@@ -77,8 +97,10 @@ export function Portfolio({ projects }: { projects: ProjectView[] }) {
           {visible.map((p, i) => {
             const index = all.indexOf(p);
             const feature = i === 0 && visible.length > 2;
+            const last = i === visible.length - 1 && i > 0;
+            const wide = last && tail.wide;
             return (
-              <li key={p.id} className={feature ? "sm:col-span-2 lg:row-span-2" : ""}>
+              <li key={p.id} className={feature ? "sm:col-span-2 lg:row-span-2" : last ? tail.cls : ""}>
                 <button
                   type="button"
                   onClick={(e) => {
@@ -91,7 +113,11 @@ export function Portfolio({ projects }: { projects: ProjectView[] }) {
                 >
                   <div
                     className={`relative w-full overflow-hidden ${
-                      feature ? "aspect-[16/10] lg:aspect-auto lg:min-h-[24rem] lg:flex-1" : "aspect-video"
+                      feature
+                        ? "aspect-[16/10] lg:aspect-auto lg:min-h-[24rem] lg:flex-1"
+                        : wide
+                          ? "aspect-video lg:aspect-[21/8]"
+                          : "aspect-video"
                     }`}
                   >
                     <Image

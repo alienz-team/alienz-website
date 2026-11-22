@@ -1,23 +1,24 @@
-import Image from "next/image";
+import type { CSSProperties } from "react";
 import { pillars, type Pillar } from "@/lib/content";
 import type { ServiceView } from "@/lib/site-data";
-import type { CSSProperties } from "react";
 import { ArrowLeft, Spark } from "./Icons";
 import { Odometer } from "./Odometer";
 
-// Bento layout per pillar on a 6-column grid (EmpireAI's platform grid).
+/* Seven cards on a 4-column bento (lg), filled with no gaps:
+     row 1-2: software (2x2) · ai (1x2) · brand
+                                         · motion
+     row 3:   photo · audio · marketing (2x1)
+   On sm (2 columns) software spans the row and the other six pair up. */
 const layout: Record<string, string> = {
-  software: "lg:col-span-4 lg:row-span-2",
-  ai: "lg:col-span-2 lg:row-span-2",
-  brand: "lg:col-span-2",
+  software: "sm:col-span-2 lg:row-span-2",
+  ai: "lg:row-span-2",
   marketing: "lg:col-span-2",
-  production: "lg:col-span-2",
 };
 
 export function Services({ services }: { services: ServiceView[] }) {
   const bySlug = new Map(services.map((s) => [s.id, s]));
   const claimed = new Set(pillars.flatMap((p) => p.slugs));
-  // Services an admin adds later still show up, in the production tile.
+  // Services an admin adds later still show up, in the catch-all card.
   const extra = services.filter((s) => !claimed.has(s.id));
 
   return (
@@ -25,7 +26,9 @@ export function Services({ services }: { services: ServiceView[] }) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-2xl">
-            <p dir="ltr" className="text-right font-latin text-sm font-medium text-alien">Services</p>
+            <p dir="ltr" className="text-right font-latin text-sm font-medium text-alien">
+              Services <span className="text-haze">/ {String(pillars.length).padStart(2, "0")}</span>
+            </p>
             <h2 id="services-title" className="mt-2 text-4xl font-black sm:text-5xl">
               كل ما يحتاجه مشروعك الرقمي، من فريق واحد
             </h2>
@@ -36,13 +39,11 @@ export function Services({ services }: { services: ServiceView[] }) {
           </a>
         </div>
 
-        <div className="mt-12 grid auto-rows-[minmax(16rem,auto)] gap-4 sm:grid-cols-2 lg:grid-cols-6">
+        <div className="mt-12 grid grid-flow-dense gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {pillars.map((p, i) => {
             const items = p.slugs.map((s) => bySlug.get(s)).filter((s): s is ServiceView => !!s);
-            if (p.id === "production") items.push(...extra);
-            return (
-              <PillarCard key={p.id} pillar={p} items={items} order={i} className={layout[p.id] ?? "lg:col-span-2"} />
-            );
+            if (p.catchAll) items.push(...extra);
+            return <PillarCard key={p.id} pillar={p} items={items} order={i} className={layout[p.id] ?? ""} />;
           })}
         </div>
       </div>
@@ -53,39 +54,50 @@ export function Services({ services }: { services: ServiceView[] }) {
 type CardProps = { pillar: Pillar; items: ServiceView[]; order: number; className: string };
 
 function PillarCard({ pillar, items, order, className }: CardProps) {
-  const hero = pillar.id === "software";
+  const featured = pillar.id === "software";
+  const wide = pillar.id === "marketing";
+  // One service per card: its admin-editable description is the blurb.
+  const blurb = items.length === 1 ? items[0].description : pillar.blurb;
+  const list = items.length > 1 ? items : [];
+
   return (
     <article
       data-spot
       data-reveal
-      style={{ "--rd": `${(order % 3) * 90}ms` } as CSSProperties}
-      className={`glass spot beam group flex flex-col overflow-hidden rounded-lg hover:border-alien-bright/30 hover:shadow-[0_0_60px_-18px_rgb(0_255_102/0.45)] ${className} ${
-        hero ? "sm:col-span-2" : ""
-      }`}
+      style={{ "--rd": `${(order % 4) * 80}ms` } as CSSProperties}
+      className={`glass spot beam group flex flex-col overflow-hidden rounded-lg hover:border-alien-bright/30 hover:shadow-[0_0_60px_-18px_rgb(0_255_102/0.45)] ${className}`}
     >
-      {pillar.image && (
-        <div className={`relative overflow-hidden ${hero ? "aspect-[16/8]" : "aspect-[16/7]"}`}>
-          <Image
-            src={pillar.image}
-            alt=""
-            fill
-            sizes={hero ? "(min-width: 1024px) 60vw, 100vw" : "(min-width: 1024px) 30vw, 100vw"}
-            className="object-cover opacity-80 transition-transform duration-700 group-hover:scale-[1.04]"
-          />
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-orbit via-orbit/30 to-transparent" />
-        </div>
-      )}
-      {pillar.id === "ai" && <AgentMesh />}
+      <div className={`relative overflow-hidden border-b border-white/[0.06] ${featured ? "aspect-[2/1]" : "aspect-[2/1] lg:aspect-[16/7]"}`}>
+        {/* Plain <img>: static SVG served as-is on Workers, animations included. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={pillar.image}
+          alt=""
+          width={400}
+          height={200}
+          loading="lazy"
+          decoding="async"
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+        />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-orbit/90 via-transparent to-transparent" />
+        <span
+          dir="ltr"
+          className="absolute top-3 left-3 font-latin text-[0.65rem] tracking-[0.2em] text-alien-bright/70"
+          aria-hidden
+        >
+          {String(order + 1).padStart(2, "0")}
+        </span>
+      </div>
 
-      <div className="flex flex-1 flex-col p-6 sm:p-7">
+      <div className={`flex flex-1 flex-col ${featured ? "p-6 sm:p-7" : "p-5 sm:p-6"}`}>
         <p dir="ltr" className="text-right font-latin text-xs font-medium text-alien">
           {pillar.en}
         </p>
-        <h3 className={`mt-1.5 font-bold ${hero ? "text-3xl" : "text-2xl"}`}>{pillar.title}</h3>
-        <p className="mt-3 text-haze">{pillar.blurb}</p>
+        <h3 className={`mt-1.5 font-bold ${featured ? "text-3xl" : "text-xl"}`}>{pillar.title}</h3>
+        <p className={`mt-2.5 text-haze ${featured ? "" : "text-[0.95rem] leading-relaxed"}`}>{blurb}</p>
 
         {(pillar.metric || pillar.gauge) && (
-          <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-5 border-y border-white/[0.07] py-5">
+          <div className="mt-5 flex flex-wrap items-center gap-x-8 gap-y-5 border-y border-white/[0.07] py-5">
             {pillar.gauge && <Gauge pct={pillar.gauge.pct} label={pillar.gauge.label} />}
             {pillar.metric && (
               <div>
@@ -96,17 +108,17 @@ function PillarCard({ pillar, items, order, className }: CardProps) {
           </div>
         )}
 
-        {(items.length > 0 || pillar.points) && (
-          <ul className={`mt-6 grid gap-x-6 gap-y-3 ${hero ? "sm:grid-cols-2" : ""}`}>
-            {items.map((s) => (
+        {(list.length > 0 || pillar.points) && (
+          <ul className={`mt-5 grid gap-x-6 gap-y-3 ${featured || wide ? "sm:grid-cols-2" : ""}`}>
+            {list.map((s) => (
               <li key={s.id} className="border-t border-white/[0.07] pt-3">
                 <p className="font-semibold text-starlight">{s.title}</p>
-                {hero && <p className="mt-1 text-sm text-haze">{s.description}</p>}
+                {featured && <p className="mt-1 text-sm text-haze">{s.description}</p>}
               </li>
             ))}
             {pillar.points?.map((pt) => (
               <li key={pt} className="flex items-start gap-2.5 text-starlight/90">
-                <Spark className="mt-1.5 h-3.5 w-3.5 shrink-0 text-alien" />
+                <Spark className="mt-1.5 h-3.5 w-3.5 shrink-0 text-alien-bright" />
                 <span>{pt}</span>
               </li>
             ))}
@@ -134,37 +146,6 @@ function Gauge({ pct, label }: { pct: number; label: string }) {
         </div>
       </div>
       <p className="max-w-[8rem] text-sm leading-snug text-haze">{label}</p>
-    </div>
-  );
-}
-
-/** A small agent graph: one orchestrator hex linked to three worker hexes. */
-function AgentMesh() {
-  const nodes = [
-    { x: 60, y: 30 },
-    { x: 200, y: 22 },
-    { x: 220, y: 108 },
-    { x: 70, y: 112 },
-  ];
-  const hex = (cx: number, cy: number, r: number) =>
-    Array.from({ length: 6 }, (_, i) => {
-      const a = (Math.PI / 3) * i + Math.PI / 6;
-      return `${(cx + r * Math.cos(a)).toFixed(1)},${(cy + r * Math.sin(a)).toFixed(1)}`;
-    }).join(" ");
-  return (
-    <div aria-hidden className="relative border-b border-white/[0.07] px-6 pt-6">
-      <svg viewBox="0 0 280 140" className="h-36 w-full">
-        {nodes.map((n, i) => (
-          <line key={i} x1={140} y1={70} x2={n.x} y2={n.y} stroke="#10B981" strokeOpacity="0.45" strokeDasharray="3 4">
-            <animate attributeName="stroke-dashoffset" from="14" to="0" dur={`${1.6 + i * 0.3}s`} repeatCount="indefinite" />
-          </line>
-        ))}
-        {nodes.map((n, i) => (
-          <polygon key={i} points={hex(n.x, n.y, 13)} fill="#0B0E17" stroke="#10B981" strokeOpacity="0.7" />
-        ))}
-        <polygon points={hex(140, 70, 24)} fill="rgb(16 185 129 / 0.12)" stroke="#00FF66" />
-        <circle cx="140" cy="70" r="4" fill="#00FF66" />
-      </svg>
     </div>
   );
 }
