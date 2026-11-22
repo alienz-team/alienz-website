@@ -1,9 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { brand, contact, nav } from "@/lib/content";
-import { Close, Menu } from "./Icons";
+import { AlienHead, Close, Menu } from "./Icons";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -41,11 +40,12 @@ export function SiteHeader() {
           : "border-b border-transparent bg-transparent"
       }`}
     >
-      <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
-        <a href="#top" className="flex shrink-0 items-center gap-3" aria-label={`${brand.name}، الصفحة الرئيسية`}>
-          <Image src="/media/logo.webp" alt="" width={40} height={40} className="h-10 w-10 object-contain" priority />
-          <span className="font-latin text-lg font-bold tracking-wide" dir="ltr">
-            {brand.name}
+      {/* flex-row-reverse: brand mark top-left, location badge top-right (RTL page). */}
+      <div className="mx-auto flex h-18 max-w-7xl flex-row-reverse items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
+        <a href="#top" dir="ltr" className="group flex shrink-0 items-center gap-3" aria-label={`${brand.mark}، الصفحة الرئيسية`}>
+          <AlienHead className="h-10 w-10 drop-shadow-[0_0_10px_rgb(0_255_102/0.75)] transition-[filter] group-hover:drop-shadow-[0_0_16px_rgb(0_255_102/0.95)]" />
+          <span className="font-latin text-lg font-bold tracking-[0.18em] text-white">
+            ALIENZ <span className="text-alien-bright [text-shadow:0_0_14px_rgb(0_255_102/0.7)]">TECH</span>
           </span>
         </a>
 
@@ -66,13 +66,16 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-3">
           {/* Status pill, adapted from Kerrfield's "All systems normal" chip */}
-          <span className="hidden items-center gap-2 rounded-full border border-alien/30 bg-alien/[0.06] px-3 py-1 text-sm text-starlight xl:inline-flex">
-            <span className="h-2 w-2 rounded-full bg-alien-bright animate-pulse-dot" aria-hidden />
+          <span className="glass hidden items-center gap-2.5 rounded-full border-alien/30 px-3.5 py-1.5 text-sm text-starlight shadow-[inset_0_0_12px_rgb(0_255_102/0.08)] sm:inline-flex">
+            <span className="relative flex h-2 w-2" aria-hidden>
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-alien-bright opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-alien-bright" />
+            </span>
             {contact.location}
           </span>
           <a
             href="#contact"
-            className="chamfer-sm hidden bg-alien px-5 py-2.5 text-sm font-bold text-space transition-colors hover:bg-alien-bright sm:inline-block"
+            className="chamfer-sm hidden bg-alien px-5 py-2.5 text-sm font-bold text-space transition-colors hover:bg-alien-bright md:inline-block"
           >
             {contact.cta}
           </a>

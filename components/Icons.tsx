@@ -130,6 +130,27 @@ export function Expand(props: IconProps) {
   );
 }
 
+/** ALIENZ mark: alien head in a headset, drawn in neon #00FF66. */
+export function AlienHead(props: IconProps) {
+  return (
+    <svg viewBox="0 0 48 48" width={40} height={40} fill="none" aria-hidden {...props}>
+      <path
+        d="M24 5c9.5 0 15 6.4 14.4 14.6-.6 8.6-7.2 18-14.4 22.4C16.8 37.6 10.2 28.2 9.6 19.6 9 11.4 14.5 5 24 5Z"
+        fill="rgb(0 255 102 / 0.12)"
+        stroke="#00FF66"
+        strokeWidth="1.8"
+      />
+      <path d="M13.5 22.5c2.6-.4 6 .6 7.6 3.6-2.8 1.1-6.5.2-7.6-3.6Z" fill="#00FF66" />
+      <path d="M34.5 22.5c-2.6-.4-6 .6-7.6 3.6 2.8 1.1 6.5.2 7.6-3.6Z" fill="#00FF66" />
+      <path d="M7.5 21c0-11 7.4-17.5 16.5-17.5S40.5 10 40.5 21" stroke="#00FF66" strokeWidth="1.6" strokeLinecap="round" />
+      <rect x="4.5" y="18.5" width="5" height="9" rx="2.5" fill="#07090f" stroke="#00FF66" strokeWidth="1.6" />
+      <rect x="38.5" y="18.5" width="5" height="9" rx="2.5" fill="#07090f" stroke="#00FF66" strokeWidth="1.6" />
+      <path d="M7 27.5c0 6 4 9.5 10 10" stroke="#00FF66" strokeWidth="1.4" strokeLinecap="round" />
+      <circle cx="18" cy="37.6" r="1.6" fill="#00FF66" />
+    </svg>
+  );
+}
+
 export const socialIcons = {
   facebook: Facebook,
   instagram: Instagram,

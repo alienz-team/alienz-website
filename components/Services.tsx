@@ -1,7 +1,9 @@
 import Image from "next/image";
 import { pillars, type Pillar } from "@/lib/content";
 import type { ServiceView } from "@/lib/site-data";
+import type { CSSProperties } from "react";
 import { ArrowLeft, Spark } from "./Icons";
+import { Odometer } from "./Odometer";
 
 // Bento layout per pillar on a 6-column grid (EmpireAI's platform grid).
 const layout: Record<string, string> = {
@@ -35,10 +37,12 @@ export function Services({ services }: { services: ServiceView[] }) {
         </div>
 
         <div className="mt-12 grid auto-rows-[minmax(16rem,auto)] gap-4 sm:grid-cols-2 lg:grid-cols-6">
-          {pillars.map((p) => {
+          {pillars.map((p, i) => {
             const items = p.slugs.map((s) => bySlug.get(s)).filter((s): s is ServiceView => !!s);
             if (p.id === "production") items.push(...extra);
-            return <PillarCard key={p.id} pillar={p} items={items} className={layout[p.id] ?? "lg:col-span-2"} />;
+            return (
+              <PillarCard key={p.id} pillar={p} items={items} order={i} className={layout[p.id] ?? "lg:col-span-2"} />
+            );
           })}
         </div>
       </div>
@@ -46,12 +50,16 @@ export function Services({ services }: { services: ServiceView[] }) {
   );
 }
 
-function PillarCard({ pillar, items, className }: { pillar: Pillar; items: ServiceView[]; className: string }) {
+type CardProps = { pillar: Pillar; items: ServiceView[]; order: number; className: string };
+
+function PillarCard({ pillar, items, order, className }: CardProps) {
   const hero = pillar.id === "software";
   return (
     <article
       data-spot
-      className={`glass spot group flex flex-col overflow-hidden rounded-lg transition-colors hover:border-alien/30 ${className} ${
+      data-reveal
+      style={{ "--rd": `${(order % 3) * 90}ms` } as CSSProperties}
+      className={`glass spot beam group flex flex-col overflow-hidden rounded-lg hover:border-alien-bright/30 hover:shadow-[0_0_60px_-18px_rgb(0_255_102/0.45)] ${className} ${
         hero ? "sm:col-span-2" : ""
       }`}
     >
@@ -76,6 +84,18 @@ function PillarCard({ pillar, items, className }: { pillar: Pillar; items: Servi
         <h3 className={`mt-1.5 font-bold ${hero ? "text-3xl" : "text-2xl"}`}>{pillar.title}</h3>
         <p className="mt-3 text-haze">{pillar.blurb}</p>
 
+        {(pillar.metric || pillar.gauge) && (
+          <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-5 border-y border-white/[0.07] py-5">
+            {pillar.gauge && <Gauge pct={pillar.gauge.pct} label={pillar.gauge.label} />}
+            {pillar.metric && (
+              <div>
+                <Odometer value={pillar.metric.value} className="text-4xl font-bold text-starlight sm:text-5xl" />
+                <p className="mt-1.5 text-sm text-haze">{pillar.metric.label}</p>
+              </div>
+            )}
+          </div>
+        )}
+
         {(items.length > 0 || pillar.points) && (
           <ul className={`mt-6 grid gap-x-6 gap-y-3 ${hero ? "sm:grid-cols-2" : ""}`}>
             {items.map((s) => (
@@ -94,6 +114,27 @@ function PillarCard({ pillar, items, className }: { pillar: Pillar; items: Servi
         )}
       </div>
     </article>
+  );
+}
+
+/** Radial gauge: the arc sweeps to `pct` and the readout rolls up each time
+ *  the card scrolls into view. */
+function Gauge({ pct, label }: { pct: number; label: string }) {
+  const style = { "--g": pct / 100 } as CSSProperties;
+  return (
+    <div className="flex items-center gap-4">
+      <div className="relative h-24 w-24 shrink-0">
+        <svg viewBox="0 0 100 100" className="gauge h-full w-full -rotate-90" style={style} aria-hidden>
+          <circle cx="50" cy="50" r="42" fill="none" stroke="rgb(255 255 255 / 0.07)" strokeWidth="6" />
+          <circle cx="50" cy="50" r="42" fill="none" stroke="#00ff66" strokeOpacity="0.25" strokeWidth="1" strokeDasharray="1 5.6" />
+          <circle className="gauge-arc" cx="50" cy="50" r="42" fill="none" stroke="#00ff66" strokeWidth="6" strokeLinecap="round" />
+        </svg>
+        <div className="absolute inset-0 grid place-items-center">
+          <Odometer value={`${pct}%`} className="text-lg font-bold text-starlight" />
+        </div>
+      </div>
+      <p className="max-w-[8rem] text-sm leading-snug text-haze">{label}</p>
+    </div>
   );
 }
 

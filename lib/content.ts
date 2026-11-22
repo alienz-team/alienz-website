@@ -5,6 +5,8 @@
 
 export const brand = {
   name: "ALIENZ TEAM",
+  /** Wordmark shown in the header. */
+  mark: "ALIENZ TECH",
   tagline: "فنون البرمجة والتصميم",
   heroCta: "انطلق معنا",
   logoAlt: "شعار ALIENZ TEAM: رأس فضائي بسماعات داخل مصباح أخضر",
@@ -124,7 +126,7 @@ export const hero = {
   lead:
     "مجموعة من الشباب المحترف جمعنا حب الفن والعمل. نبني البرمجيات وأنظمة الذكاء الاصطناعي، نصمم الهويات، ونطلق الحملات التي تصل لجمهورك.",
   primary: "ابدأ مشروعك",
-  secondary: "تصفّح الأعمال",
+  secondary: "تصفح أعمالنا",
   // Tripoli, Libya.
   coords: "32.8872° N  13.1913° E",
 };
@@ -139,6 +141,10 @@ export type Pillar = {
   slugs: string[];
   points?: readonly string[];
   image?: string;
+  /** Rolling odometer readout. Showcase figures: replace with real numbers. */
+  metric?: { value: string; label: string };
+  /** Radial gauge, 0-100. */
+  gauge?: { pct: number; label: string };
 };
 
 export const pillars: Pillar[] = [
@@ -150,10 +156,12 @@ export const pillars: Pillar[] = [
       "مواقع وتطبيقات ولوحات تحكم مبنية لتكبر مع عملك: كود نظيف، أداء سريع على كل الشاشات، ونشر على بنية سحابية.",
     slugs: ["web", "mobile"],
     image: "/media/svc-web.webp",
+    metric: { value: "4.2B", label: "طلب شهرياً تتحمّله البنية السحابية" },
+    gauge: { pct: 99.9, label: "جاهزية الخوادم" },
   },
   {
     id: "ai",
-    title: "أنظمة الذكاء الاصطناعي والوكلاء المتعددون",
+    title: "أنظمة الذكاء الاصطناعي",
     en: "AI Systems & Multi-Agent",
     blurb:
       "مساعدون أذكياء يفهمون بيانات شركتك، ووكلاء يتعاونون لإنجاز المهام المتكررة بدلاً من فريقك.",
@@ -163,14 +171,17 @@ export const pillars: Pillar[] = [
       "أتمتة سير العمل بين أدواتك",
       "ربط النماذج اللغوية ببيانات شركتك",
     ],
+    metric: { value: "24/7", label: "وكلاء يعملون دون توقف" },
+    gauge: { pct: 87, label: "مهام مؤتمتة" },
   },
   {
     id: "brand",
-    title: "تجربة المستخدم والهوية البصرية",
+    title: "الهوية وتجربة المستخدم",
     en: "UI/UX & Brand Identity",
     blurb: "واجهات سهلة الاستخدام، وهوية تعرّف بعلامتك من الشعار إلى الفيديو المتحرك.",
     slugs: ["identity", "motion"],
     image: "/media/svc-identity.webp",
+    metric: { value: "360°", label: "هوية متكاملة من الشعار إلى الحركة" },
   },
   {
     id: "marketing",

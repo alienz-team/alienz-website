@@ -1,6 +1,7 @@
 import { Contact } from "@/components/Contact";
 import { Hero } from "@/components/Hero";
 import { Method } from "@/components/Method";
+import { MotionDirector } from "@/components/MotionDirector";
 import { PointerGlow } from "@/components/PointerGlow";
 import { Portfolio } from "@/components/Portfolio";
 import { Services } from "@/components/Services";
@@ -19,6 +20,7 @@ export default async function Home() {
   return (
     <>
       <PointerGlow />
+      <MotionDirector />
       <SiteHeader />
       <main id="main">
         <Hero servicesCount={services.length} projectsCount={projects.length} />
