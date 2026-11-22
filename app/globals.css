@@ -149,19 +149,6 @@
   from { opacity: 0; transform: translate3d(90px, 40px, -120px) rotateY(-28deg) scale(0.9); }
   to { opacity: 1; transform: none; }
 }
-@keyframes wall-fall { from { transform: translateY(-480px); } to { transform: translateY(460px); } }
-@keyframes cable-flow { to { stroke-dashoffset: -120; } }
-@keyframes holo-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-9px); }
-}
-@keyframes flicker {
-  0%, 100% { opacity: 1; } 47% { opacity: 0.85; } 50% { opacity: 0.55; } 53% { opacity: 0.9; }
-}
-@keyframes blink { 0%, 100% { opacity: 0.85; } 50% { opacity: 0.2; } }
-@keyframes bar { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.45); } }
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes sweep { from { transform: translateX(-120%); } to { transform: translateX(320%); } }
 @keyframes beam-spin { to { --beam: 360deg; } }
 
 @layer components {
@@ -198,42 +185,39 @@
     transform:
       translateY(calc(var(--sp, 0) * -40px))
       rotateX(calc(4deg + var(--sp, 0) * 12deg + var(--py, 0) * -5deg))
-      rotateY(calc(-10deg + var(--sp, 0) * -20deg + var(--px, 0) * 8deg))
+      rotateY(calc(-6deg + var(--sp, 0) * -20deg + var(--px, 0) * 8deg))
       rotateZ(calc(var(--sp, 0) * 2deg));
     transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.1, 1);
     will-change: transform;
   }
-  .station .layer,
-  .station .holo-layer {
+  .station .layer {
+    position: absolute;
+    inset: 0;
     transform: translateZ(var(--z, 0px)) translateY(calc(var(--sp, 0) * var(--par, 0px)));
   }
-  .station .layer { position: absolute; inset: 0; }
-  .station .holo-layer {
-    transform:
-      translateZ(var(--z, 0px))
-      translateY(calc(var(--sp, 0) * var(--par, 0px)))
-      rotateY(calc(var(--ry, 0deg) + var(--sp, 0) * var(--rs, 0deg)))
-      rotateX(calc(var(--sp, 0) * 10deg));
-  }
-  .holo-float { animation: holo-float 6s ease-in-out infinite; animation-delay: var(--fd, 0s); }
-  .holo-panel {
-    border: 1px solid rgb(0 255 102 / 0.38);
+  /* Neon ambient light the scene floats in. */
+  .station .station-glow {
     background:
-      repeating-linear-gradient(0deg, rgb(0 255 102 / 0.05) 0 1px, transparent 1px 3px),
-      linear-gradient(160deg, rgb(0 255 102 / 0.14), rgb(0 255 102 / 0.03));
-    box-shadow: 0 0 32px -6px rgb(0 255 102 / 0.45), inset 0 0 18px rgb(0 255 102 / 0.08);
-    animation: flicker 7s steps(1) infinite;
+      radial-gradient(ellipse 60% 55% at 50% 50%, rgb(0 255 102 / 0.32), transparent 70%),
+      radial-gradient(ellipse 80% 70% at 50% 60%, rgb(16 185 129 / 0.18), transparent 75%);
+    filter: blur(28px);
+    transform: translateZ(var(--z, 0px)) translateY(calc(var(--sp, 0) * var(--par, 0px))) scale(1.15);
   }
-  .wall-col { animation: wall-fall 10s linear infinite; }
-  .cable-flow { stroke-dasharray: 6 54; animation: cable-flow 2.4s linear infinite; }
-  .holo-flicker { animation: flicker 4s steps(1) infinite; }
-  .key-blink { animation: blink 2.2s ease-in-out infinite; }
-  .led-pulse { animation: blink 1.8s ease-in-out infinite; }
-  .eye-scan { animation: blink 3.2s ease-in-out infinite; }
-  .code-line { transform-origin: right; animation: bar 3.6s ease-in-out infinite; }
-  .bar-pulse { transform-origin: bottom; animation: bar 1.6s ease-in-out infinite; }
-  .radar-spin { transform-origin: 50px 50px; animation: spin 4s linear infinite; }
-  .load-sweep { animation: sweep 2.2s ease-in-out infinite; }
+  /* Feather every edge into the hex/rain background: a soft radial
+     vignette intersected with left/right and top/bottom fades. */
+  .station-img {
+    -webkit-mask-image:
+      radial-gradient(ellipse 72% 70% at 52% 48%, #000 45%, transparent 100%),
+      linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent),
+      linear-gradient(180deg, transparent, #000 10%, #000 80%, transparent);
+    -webkit-mask-composite: source-in, source-in;
+    mask-image:
+      radial-gradient(ellipse 72% 70% at 52% 48%, #000 45%, transparent 100%),
+      linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent),
+      linear-gradient(180deg, transparent, #000 10%, #000 80%, transparent);
+    mask-composite: intersect;
+    filter: saturate(1.05) contrast(1.05);
+  }
 
   /* ── Bento: travelling border light ── */
   .beam { transition: border-color 0.5s, box-shadow 0.5s; }
@@ -297,7 +281,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .station-rig, .station .layer, .station .holo-layer { transform: none !important; }
+  .station-rig, .station .layer { transform: none !important; }
   html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
