@@ -3,18 +3,19 @@
 import Image from "next/image";
 import { useMemo, useRef, useState } from "react";
 import { projectCategories } from "@/lib/content";
+import type { Dict } from "@/lib/i18n";
 import type { ProjectView } from "@/lib/site-data";
 import { Expand } from "./Icons";
 import { ProjectDialog } from "./ProjectDialog";
 
 export type CategorizedProject = ProjectView & { category: string; categoryLabel: string };
 
-function categorize(p: ProjectView): CategorizedProject {
+function categorize(p: ProjectView, labels: Record<string, string>): CategorizedProject {
   const text = `${p.title} ${p.alt}`;
   const c = projectCategories.find((c) => c.match.test(text)) ?? projectCategories[projectCategories.length - 1];
   // Placeholder titles like "تصميم 3" read as noise; use the alt text's lead clause instead.
   const title = /^تصميم\s*\d+$/.test(p.title.trim()) ? p.alt.split(/[:،]/)[0].trim() || p.title : p.title;
-  return { ...p, title, category: c.id, categoryLabel: c.label };
+  return { ...p, title, category: c.id, categoryLabel: labels[c.id] ?? c.label };
 }
 
 /** The first card is 2x2 on lg (full-row on sm) when there are 3+ works.
@@ -28,8 +29,11 @@ function tailSpan(n: number): { cls: string; wide: boolean } {
   return { cls: `${smOdd ? "sm:col-span-2" : ""} ${lg}`.trim(), wide: lgRem !== 0 };
 }
 
-export function Portfolio({ projects }: { projects: ProjectView[] }) {
-  const all = useMemo(() => projects.map(categorize), [projects]);
+type Props = { projects: ProjectView[]; t: Pick<Dict, "work" | "categories" | "locale"> };
+
+export function Portfolio({ projects, t }: Props) {
+  const w = t.work;
+  const all = useMemo(() => projects.map((p) => categorize(p, t.categories)), [projects, t.categories]);
   const filters = useMemo(
     () => projectCategories.filter((c) => all.some((p) => p.category === c.id)),
     [all],
@@ -54,22 +58,22 @@ export function Portfolio({ projects }: { projects: ProjectView[] }) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-2xl">
-            <p dir="ltr" className="text-right font-latin text-sm font-medium text-alien">
+            <p dir="ltr" className="rtl:text-right font-latin text-sm font-medium text-alien">
               Selected work <span className="text-haze">/ {String(all.length).padStart(2, "0")}</span>
             </p>
             <h2 id="work-title" className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-2 text-4xl font-black sm:text-5xl">
-              من أعمالنا
+              {w.heading}
               <span className="inline-flex items-center gap-2 rounded-full border border-alien/30 bg-alien/[0.06] px-3 py-1 text-sm font-semibold text-alien-bright">
                 <span className="h-1.5 w-1.5 rounded-full bg-alien-bright animate-pulse-dot" aria-hidden />
-                <span className="font-latin">{all.length}</span> أعمال منشورة
+                <span className="font-latin">{all.length}</span> {w.published}
               </span>
             </h2>
-            <p className="mt-4 text-lg text-haze">حملات وتصاميم نفذناها لعملائنا ولعلامتنا. اختر عملاً لتراه كاملاً.</p>
+            <p className="mt-4 text-lg text-haze">{w.intro}</p>
           </div>
 
           {filters.length > 1 && (
-            <div role="group" aria-label="تصفية الأعمال حسب النوع" className="flex flex-wrap gap-2">
-              {[{ id: "all", label: "الكل" }, ...filters].map((f) => {
+            <div role="group" aria-label={w.filterLabel} className="flex flex-wrap gap-2">
+              {[{ id: "all", label: w.all }, ...filters.map((c) => ({ id: c.id, label: t.categories[c.id] ?? c.label }))].map((f) => {
                 const count = f.id === "all" ? all.length : all.filter((p) => p.category === f.id).length;
                 const on = filter === f.id;
                 return (
@@ -93,7 +97,7 @@ export function Portfolio({ projects }: { projects: ProjectView[] }) {
           )}
         </div>
 
-        <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {visible.map((p, i) => {
             const index = all.indexOf(p);
             const feature = i === 0 && visible.length > 2;
@@ -109,7 +113,7 @@ export function Portfolio({ projects }: { projects: ProjectView[] }) {
                   }}
                   aria-haspopup="dialog"
                   data-spot
-                  className="spot group flex h-full w-full flex-col overflow-hidden rounded-lg border border-white/[0.07] bg-space text-right transition-colors hover:border-alien/40"
+                  className="spot group flex h-full w-full flex-col overflow-hidden rounded-lg border border-veil/[0.07] bg-space text-start transition-colors hover:border-alien/40"
                 >
                   <div
                     className={`relative w-full overflow-hidden ${
@@ -128,14 +132,14 @@ export function Portfolio({ projects }: { projects: ProjectView[] }) {
                       className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                     />
                   </div>
-                  <div className="flex w-full items-center justify-between gap-4 border-t border-white/[0.07] px-5 py-4">
+                  <div className="flex w-full items-center justify-between gap-4 border-t border-veil/[0.07] px-5 py-4">
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-alien">{p.categoryLabel}</p>
                       <h3 className="mt-0.5 truncate font-bold text-starlight">{p.title}</h3>
                     </div>
                     <span className="chamfer-sm inline-flex h-9 w-9 shrink-0 items-center justify-center border border-line text-haze transition-colors group-hover:border-alien group-hover:text-alien">
                       <Expand className="h-4 w-4" />
-                      <span className="sr-only">عرض التفاصيل</span>
+                      <span className="sr-only">{w.details}</span>
                     </span>
                   </div>
                 </button>
@@ -151,6 +155,8 @@ export function Portfolio({ projects }: { projects: ProjectView[] }) {
           position={{ index: open, total: all.length }}
           onClose={close}
           onStep={(d) => setOpen((open + d + all.length) % all.length)}
+          t={w}
+          rtl={t.locale === "ar"}
         />
       )}
     </section>

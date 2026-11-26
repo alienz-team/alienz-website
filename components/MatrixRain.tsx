@@ -73,5 +73,5 @@ export function MatrixRain({ className = "" }: { className?: string }) {
     };
   }, []);
 
-  return <canvas ref={ref} aria-hidden className={`pointer-events-none mix-blend-screen ${className}`} />;
+  return <canvas ref={ref} aria-hidden className={`rain pointer-events-none mix-blend-screen ${className}`} />;
 }

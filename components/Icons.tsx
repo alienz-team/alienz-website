@@ -14,17 +14,18 @@ const base = {
   "aria-hidden": true,
 };
 
-export function ArrowLeft(props: IconProps) {
+/** Points "forward" in the reading direction: left in Arabic, right in English. */
+export function ArrowLeft({ className = "", ...props }: IconProps) {
   return (
-    <svg {...base} {...props}>
+    <svg {...base} {...props} className={`ltr:-scale-x-100 ${className}`}>
       <path d="M19 12H5M11 18l-6-6 6-6" />
     </svg>
   );
 }
 
-export function ArrowRight(props: IconProps) {
+export function ArrowRight({ className = "", ...props }: IconProps) {
   return (
-    <svg {...base} {...props}>
+    <svg {...base} {...props} className={`ltr:-scale-x-100 ${className}`}>
       <path d="M5 12h14M13 6l6 6-6 6" />
     </svg>
   );
@@ -133,20 +134,63 @@ export function Expand(props: IconProps) {
 /** ALIENZ mark: alien head in a headset, drawn in neon #00FF66. */
 export function AlienHead(props: IconProps) {
   return (
-    <svg viewBox="0 0 48 48" width={40} height={40} fill="none" aria-hidden {...props}>
+    <svg viewBox="0 0 48 48" width={40} height={40} fill="none" aria-hidden color="#00FF66" {...props}>
       <path
         d="M24 5c9.5 0 15 6.4 14.4 14.6-.6 8.6-7.2 18-14.4 22.4C16.8 37.6 10.2 28.2 9.6 19.6 9 11.4 14.5 5 24 5Z"
-        fill="rgb(0 255 102 / 0.12)"
-        stroke="#00FF66"
+        fill="currentColor"
+        fillOpacity="0.12"
+        stroke="currentColor"
         strokeWidth="1.8"
       />
-      <path d="M13.5 22.5c2.6-.4 6 .6 7.6 3.6-2.8 1.1-6.5.2-7.6-3.6Z" fill="#00FF66" />
-      <path d="M34.5 22.5c-2.6-.4-6 .6-7.6 3.6 2.8 1.1 6.5.2 7.6-3.6Z" fill="#00FF66" />
-      <path d="M7.5 21c0-11 7.4-17.5 16.5-17.5S40.5 10 40.5 21" stroke="#00FF66" strokeWidth="1.6" strokeLinecap="round" />
-      <rect x="4.5" y="18.5" width="5" height="9" rx="2.5" fill="#07090f" stroke="#00FF66" strokeWidth="1.6" />
-      <rect x="38.5" y="18.5" width="5" height="9" rx="2.5" fill="#07090f" stroke="#00FF66" strokeWidth="1.6" />
-      <path d="M7 27.5c0 6 4 9.5 10 10" stroke="#00FF66" strokeWidth="1.4" strokeLinecap="round" />
-      <circle cx="18" cy="37.6" r="1.6" fill="#00FF66" />
+      <path d="M13.5 22.5c2.6-.4 6 .6 7.6 3.6-2.8 1.1-6.5.2-7.6-3.6Z" fill="currentColor" />
+      <path d="M34.5 22.5c-2.6-.4-6 .6-7.6 3.6 2.8 1.1 6.5.2 7.6-3.6Z" fill="currentColor" />
+      <path d="M7.5 21c0-11 7.4-17.5 16.5-17.5S40.5 10 40.5 21" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <rect x="4.5" y="18.5" width="5" height="9" rx="2.5" style={{ fill: "var(--color-space)" }} stroke="currentColor" strokeWidth="1.6" />
+      <rect x="38.5" y="18.5" width="5" height="9" rx="2.5" style={{ fill: "var(--color-space)" }} stroke="currentColor" strokeWidth="1.6" />
+      <path d="M7 27.5c0 6 4 9.5 10 10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <circle cx="18" cy="37.6" r="1.6" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function Sun(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+    </svg>
+  );
+}
+
+export function Moon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M20.5 14.4A8.5 8.5 0 1 1 9.6 3.5a7 7 0 0 0 10.9 10.9Z" />
+    </svg>
+  );
+}
+
+export function Download(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 3v12M7 10l5 5 5-5M5 21h14" />
+    </svg>
+  );
+}
+
+export function Globe(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z" />
+    </svg>
+  );
+}
+
+export function Share(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 15V3M8 7l4-4 4 4M6 11H5v10h14V11h-1" />
     </svg>
   );
 }

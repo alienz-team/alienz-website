@@ -21,10 +21,21 @@ function fromB64url(s: string): Uint8Array {
   return Uint8Array.from(bin, (c) => c.charCodeAt(0));
 }
 
+/** The unified admin account. ADMIN_EMAIL overrides the address. */
+export const DEFAULT_ADMIN_EMAIL = "alienzteam7@gmail.com";
+const adminEmail = () => (process.env.ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL).trim().toLowerCase();
+
+/** HMAC key material. ADMIN_SESSION_SECRET (32+ chars) when set; otherwise
+ *  derived from server-only secrets, so sign-in still works on a deploy that
+ *  only has DATABASE_URL + ADMIN_PASSWORD. Rotating any of them signs every
+ *  session out. */
 function secret(): string {
   const s = process.env.ADMIN_SESSION_SECRET;
-  if (!s || s.length < 32) throw new Error("ADMIN_SESSION_SECRET is missing or too short");
-  return s;
+  if (s && s.length >= 32) return s;
+  const db = process.env.DATABASE_URL ?? "";
+  const pw = process.env.ADMIN_PASSWORD ?? "";
+  if (!db || !pw) throw new Error("Set ADMIN_SESSION_SECRET, or DATABASE_URL and ADMIN_PASSWORD");
+  return `alienz-session|${db}|${pw}`;
 }
 
 async function hmac(data: string): Promise<Uint8Array> {
@@ -47,9 +58,12 @@ function equalBytes(a: Uint8Array, b: Uint8Array): boolean {
 
 /** Constant-time check: compare HMACs of both sides so lengths never leak. */
 export async function checkCredentials(email: string, password: string): Promise<boolean> {
-  const wantEmail = (process.env.ADMIN_EMAIL ?? "").trim().toLowerCase();
+  const wantEmail = adminEmail();
   const wantPassword = process.env.ADMIN_PASSWORD ?? "";
-  if (!wantEmail || !wantPassword) return false;
+  if (!wantPassword) {
+    console.error("Admin sign-in is disabled: ADMIN_PASSWORD is not set");
+    return false;
+  }
   const [e1, e2, p1, p2] = await Promise.all([
     hmac(`e:${email.trim().toLowerCase()}`),
     hmac(`e:${wantEmail}`),

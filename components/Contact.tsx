@@ -2,20 +2,28 @@
 
 import { startTransition, useActionState, useEffect, useRef, type FormEvent } from "react";
 import { submitInquiry, type InquiryState } from "@/app/actions/inquiry";
-import { about, contact as staticContact, pillars } from "@/lib/content";
+import { contact as staticContact } from "@/lib/content";
+import type { Dict } from "@/lib/i18n";
 import type { ContactView } from "@/lib/site-data";
 import { ArrowLeft, Mail, Phone, Pin, WhatsApp, socialIcons } from "./Icons";
 
 const initial: InquiryState = { status: "idle" };
 
 /** wa.me link built from the phone setting, so the admin edits one value. */
-function whatsappHref(phoneHref: string) {
+function whatsappHref(phoneHref: string, message: string) {
   const digits = phoneHref.replace(/\D/g, "");
-  const text = encodeURIComponent("مرحباً ALIENZ TEAM، أريد استشارة بخصوص مشروع.");
+  const text = encodeURIComponent(message);
   return digits.length >= 8 ? `https://wa.me/${digits}?text=${text}` : null;
 }
 
-export function Contact({ info, serviceTitles }: { info: ContactView; serviceTitles: string[] }) {
+type Props = {
+  info: ContactView;
+  serviceTitles: string[];
+  t: Pick<Dict, "contactSection" | "about" | "pillars" | "socials" | "locale">;
+};
+
+export function Contact({ info, serviceTitles, t }: Props) {
+  const c = t.contactSection;
   const [state, action, pending] = useActionState(submitInquiry, initial);
   const formRef = useRef<HTMLFormElement>(null);
   const errors = state.errors ?? {};
@@ -37,20 +45,20 @@ export function Contact({ info, serviceTitles }: { info: ContactView; serviceTit
     }
   }, [state]);
 
-  const wa = whatsappHref(info.phoneHref);
+  const wa = whatsappHref(info.phoneHref, c.whatsappText);
   const field =
-    "mt-2 block w-full rounded-md border border-white/10 bg-space/80 px-4 py-3 text-starlight placeholder:text-haze/60 transition-colors focus:border-alien focus:outline-none aria-[invalid=true]:border-red-400";
+    "mt-2 block w-full rounded-md border border-veil/10 bg-space/80 px-4 py-3 text-starlight placeholder:text-haze/60 transition-colors focus:border-alien focus:outline-none aria-[invalid=true]:border-red-400";
 
   return (
     <section id="contact" aria-labelledby="contact-title" className="relative overflow-hidden border-t border-line py-20 sm:py-28">
       <div aria-hidden className="pointer-events-none absolute -bottom-40 left-[-10%] h-[32rem] w-[32rem] rounded-full bg-alien/10 blur-3xl" />
-      <div className="relative mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-8">
+      <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-8">
         <div className="lg:col-span-5">
-          <p dir="ltr" className="text-right font-latin text-sm font-medium text-alien">Free consultation</p>
+          <p dir="ltr" className="rtl:text-right font-latin text-sm font-medium text-alien">Free consultation</p>
           <h2 id="contact-title" className="mt-2 text-4xl font-black sm:text-5xl">
-            احكِ لنا عن مشروعك
+            {c.heading}
           </h2>
-          <p className="mt-5 max-w-md text-lg leading-loose text-haze">{about.reassurance}</p>
+          <p className="mt-5 max-w-md text-lg leading-loose text-haze">{t.about.reassurance}</p>
 
           {wa && (
             <a
@@ -62,11 +70,11 @@ export function Contact({ info, serviceTitles }: { info: ContactView; serviceTit
               <span className="flex items-center gap-4">
                 <WhatsApp className="h-7 w-7" />
                 <span>
-                  <span className="block text-lg font-black">راسلنا على واتساب</span>
-                  <span className="block text-sm font-semibold text-space/75">أسرع طريقة للوصول إلينا</span>
+                  <span className="block text-lg font-black">{c.whatsapp}</span>
+                  <span className="block text-sm font-semibold text-space/75">{c.whatsappSub}</span>
                 </span>
               </span>
-              <ArrowLeft className="transition-transform group-hover:-translate-x-1" />
+              <ArrowLeft className="shrink-0 transition-transform rtl:group-hover:-translate-x-1 ltr:group-hover:translate-x-1" />
             </a>
           )}
 
@@ -89,7 +97,7 @@ export function Contact({ info, serviceTitles }: { info: ContactView; serviceTit
             </li>
           </ul>
 
-          <ul className="mt-6 flex gap-2" aria-label="حساباتنا على مواقع التواصل">
+          <ul className="mt-6 flex gap-2" aria-label={c.socialsLabel}>
             {staticContact.socials.map((s) => {
               const Icon = socialIcons[s.icon];
               return (
@@ -98,7 +106,7 @@ export function Contact({ info, serviceTitles }: { info: ContactView; serviceTit
                     href={s.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={s.label}
+                    aria-label={t.socials[s.icon] ?? s.label}
                     className="chamfer-sm inline-flex h-12 w-12 items-center justify-center border border-line bg-orbit text-starlight transition-colors hover:border-alien hover:text-alien"
                   >
                     <Icon />
@@ -113,13 +121,14 @@ export function Contact({ info, serviceTitles }: { info: ContactView; serviceTit
           <form ref={formRef} onSubmit={onSubmit} noValidate data-spot className="glass spot hud relative rounded-lg p-6 sm:p-10">
             {/* Honeypot for bots: hidden from people and assistive tech. */}
             <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
-              <label htmlFor="website">اترك هذا الحقل فارغاً</label>
+              <label htmlFor="website">{c.honeypot}</label>
               <input id="website" name="website" tabIndex={-1} autoComplete="off" />
             </div>
+            <input type="hidden" name="locale" value={t.locale} />
 
-            <div className="grid gap-6 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
-                <label htmlFor="name" className="font-semibold">الاسم</label>
+                <label htmlFor="name" className="font-semibold">{c.name}</label>
                 <input
                   id="name"
                   name="name"
@@ -132,7 +141,7 @@ export function Contact({ info, serviceTitles }: { info: ContactView; serviceTit
                 {errors.name && <p id="name-error" className="mt-2 text-sm text-red-300">{errors.name}</p>}
               </div>
               <div>
-                <label htmlFor="reply-to" className="font-semibold">البريد أو الهاتف</label>
+                <label htmlFor="reply-to" className="font-semibold">{c.replyTo}</label>
                 <input
                   id="reply-to"
                   name="contact"
@@ -140,7 +149,7 @@ export function Contact({ info, serviceTitles }: { info: ContactView; serviceTit
                   inputMode="email"
                   autoComplete="email"
                   maxLength={200}
-                  className={`${field} text-right`}
+                  className={`${field} rtl:text-right`}
                   aria-invalid={!!errors.contact}
                   aria-describedby={errors.contact ? "contact-error" : undefined}
                 />
@@ -149,15 +158,15 @@ export function Contact({ info, serviceTitles }: { info: ContactView; serviceTit
             </div>
 
             <div className="mt-6">
-              <label htmlFor="service" className="font-semibold">الخدمة</label>
+              <label htmlFor="service" className="font-semibold">{c.service}</label>
               <select id="service" name="service" className={field} defaultValue="">
-                <option value="">لست متأكداً بعد</option>
-                <optgroup label="المجالات">
-                  {pillars.map((p) => (
+                <option value="">{c.notSure}</option>
+                <optgroup label={c.areas}>
+                  {t.pillars.map((p) => (
                     <option key={p.id} value={p.title}>{p.title}</option>
                   ))}
                 </optgroup>
-                <optgroup label="خدمات محددة">
+                <optgroup label={c.specific}>
                   {serviceTitles.map((t) => (
                     <option key={t} value={t}>{t}</option>
                   ))}
@@ -166,13 +175,13 @@ export function Contact({ info, serviceTitles }: { info: ContactView; serviceTit
             </div>
 
             <div className="mt-6">
-              <label htmlFor="message" className="font-semibold">صف مشروعك</label>
+              <label htmlFor="message" className="font-semibold">{c.message}</label>
               <textarea
                 id="message"
                 name="message"
                 rows={5}
                 maxLength={5000}
-                placeholder="مثلاً: أحتاج متجراً إلكترونياً لمحلي في طرابلس…"
+                placeholder={c.placeholder}
                 className={`${field} resize-y`}
                 aria-invalid={!!errors.message}
                 aria-describedby={errors.message ? "message-error" : undefined}
@@ -187,13 +196,13 @@ export function Contact({ info, serviceTitles }: { info: ContactView; serviceTit
                 className="chamfer-sm inline-flex items-center justify-center gap-2 bg-alien px-8 py-4 text-lg font-bold text-space transition-colors hover:bg-alien-bright disabled:cursor-wait disabled:opacity-70"
               >
                 <Mail />
-                {pending ? "جارٍ الإرسال…" : "أرسل طلب الاستشارة"}
+                {pending ? c.sending : c.submit}
               </button>
               <p
                 role="status"
                 className={`text-sm ${state.status === "success" ? "text-alien" : state.message ? "text-red-300" : "text-haze"}`}
               >
-                {state.message ?? "تصلنا رسالتك مباشرة ونرد عليك على البريد أو الهاتف."}
+                {state.message ?? c.hint}
               </p>
             </div>
           </form>

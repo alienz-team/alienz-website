@@ -1,10 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { brand, contact, nav } from "@/lib/content";
+import { brand } from "@/lib/content";
+import type { Dict, Locale } from "@/lib/i18n";
 import { AlienHead, Close, Menu } from "./Icons";
+import { InstallButton, LanguageToggle, ThemeToggle } from "./SiteControls";
 
-export function SiteHeader() {
+type Props = { locale: Locale; t: Pick<Dict, "header" | "nav" | "controls" | "location"> };
+
+export function SiteHeader({ locale, t }: Props) {
+  const nav = t.nav;
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -40,16 +45,16 @@ export function SiteHeader() {
           : "border-b border-transparent bg-transparent"
       }`}
     >
-      {/* flex-row-reverse: brand mark top-left, location badge top-right (RTL page). */}
-      <div className="mx-auto flex h-18 max-w-7xl flex-row-reverse items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
-        <a href="#top" dir="ltr" className="group flex shrink-0 items-center gap-3" aria-label={`${brand.mark}، الصفحة الرئيسية`}>
-          <AlienHead className="h-10 w-10 drop-shadow-[0_0_10px_rgb(0_255_102/0.75)] transition-[filter] group-hover:drop-shadow-[0_0_16px_rgb(0_255_102/0.95)]" />
-          <span className="font-latin text-lg font-bold tracking-[0.18em] text-white">
+      {/* Arabic: brand mark top-left, location badge top-right (row reversed). */}
+      <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-3 px-4 rtl:flex-row-reverse sm:gap-6 sm:px-6 lg:px-8">
+        <a href="#top" dir="ltr" className="group flex min-w-0 shrink-0 items-center gap-2.5 sm:gap-3" aria-label={`${brand.mark}, ${t.header.home}`}>
+          <AlienHead className="h-9 w-9 shrink-0 text-alien-bright drop-shadow-[0_0_10px_rgb(0_255_102/0.75)] transition-[filter] group-hover:drop-shadow-[0_0_16px_rgb(0_255_102/0.95)]" />
+          <span className="font-latin text-base font-bold tracking-[0.14em] whitespace-nowrap text-starlight sm:text-lg sm:tracking-[0.18em]">
             ALIENZ <span className="text-alien-bright [text-shadow:0_0_14px_rgb(0_255_102/0.7)]">TECH</span>
           </span>
         </a>
 
-        <nav aria-label="القائمة الرئيسية" className="hidden lg:block">
+        <nav aria-label={t.header.mainNav} className="hidden lg:block">
           <ul className="flex items-center gap-1">
             {nav.slice(1, -1).map((item) => (
               <li key={item.href}>
@@ -64,20 +69,25 @@ export function SiteHeader() {
           </ul>
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Status pill, adapted from Kerrfield's "All systems normal" chip */}
-          <span className="glass hidden items-center gap-2.5 rounded-full border-alien/30 px-3.5 py-1.5 text-sm text-starlight shadow-[inset_0_0_12px_rgb(0_255_102/0.08)] sm:inline-flex">
+          <span className="glass hidden items-center gap-2.5 rounded-full border-alien/30 px-3.5 py-1.5 text-sm text-starlight shadow-[inset_0_0_12px_rgb(0_255_102/0.08)] xl:inline-flex">
             <span className="relative flex h-2 w-2" aria-hidden>
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-alien-bright opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-alien-bright" />
             </span>
-            {contact.location}
+            {t.location}
+          </span>
+          <LanguageToggle locale={locale} t={t.controls} />
+          <ThemeToggle t={t.controls} />
+          <span className="hidden lg:inline-flex">
+            <InstallButton t={t.controls} />
           </span>
           <a
             href="#contact"
-            className="chamfer-sm hidden bg-alien px-5 py-2.5 text-sm font-bold text-space transition-colors hover:bg-alien-bright md:inline-block"
+            className="chamfer-sm hidden bg-alien px-5 py-2.5 text-sm font-bold whitespace-nowrap text-space transition-colors hover:bg-alien-bright md:inline-block"
           >
-            {contact.cta}
+            {t.header.cta}
           </a>
           <button
             ref={toggleRef}
@@ -85,7 +95,7 @@ export function SiteHeader() {
             className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-line text-starlight lg:hidden"
             aria-expanded={open}
             aria-controls="mobile-menu"
-            aria-label={open ? "إغلاق القائمة" : "فتح القائمة"}
+            aria-label={open ? t.header.closeMenu : t.header.openMenu}
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <Close /> : <Menu />}
@@ -98,7 +108,7 @@ export function SiteHeader() {
         hidden={!open}
         className="h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-line/70 bg-space lg:hidden"
       >
-        <nav aria-label="قائمة الجوال" className="px-4 py-6 sm:px-6">
+        <nav aria-label={t.header.mobileNav} className="px-4 py-6 sm:px-6">
           <ul className="divide-y divide-line/60">
             {nav.map((item) => (
               <li key={item.href}>
@@ -117,8 +127,12 @@ export function SiteHeader() {
             onClick={() => setOpen(false)}
             className="chamfer-sm mt-8 block bg-alien px-5 py-4 text-center font-bold text-space"
           >
-            {contact.cta}
+            {t.header.cta}
           </a>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <InstallButton t={t.controls} variant="full" />
+            <LanguageToggle locale={locale} t={t.controls} withLabel />
+          </div>
         </nav>
       </div>
     </header>

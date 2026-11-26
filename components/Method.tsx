@@ -1,24 +1,25 @@
-import { about, method } from "@/lib/content";
+import type { Dict } from "@/lib/i18n";
 import { Hex } from "./Icons";
 
 // Process steps as Hexwall-style tactical cards, then the tool stack.
-export function Method() {
+export function Method({ t }: { t: Dict }) {
+  const { method, about } = t;
   return (
     <section id="process" aria-labelledby="process-title" className="relative overflow-hidden py-20 sm:py-28">
       <div aria-hidden className="hexgrid pointer-events-none absolute inset-0 opacity-[0.04]" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-12">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           <div className="lg:col-span-6">
-            <p dir="ltr" className="text-right font-latin text-sm font-medium text-alien">How we work</p>
+            <p dir="ltr" className="rtl:text-right font-latin text-sm font-medium text-alien">How we work</p>
             <h2 id="process-title" className="mt-2 text-4xl font-black sm:text-5xl">{method.title}</h2>
           </div>
           <div className="space-y-3 text-lg text-haze lg:col-span-6 lg:pt-8">
-            <p className="text-starlight">{about.lead}. {about.paragraphs[1]}</p>
+            <p className="text-starlight">{about.lead}. {about.team}</p>
             <p>{method.intro}</p>
           </div>
         </div>
 
-        <ol className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {method.steps.map((s, i) => (
             <li key={s.title} data-spot className="spot hud chamfer relative border border-line bg-orbit/80 p-6">
               <div className="flex items-center justify-between">
@@ -40,8 +41,8 @@ export function Method() {
         </ol>
 
         <div className="mt-16 border-t border-line pt-10">
-          <h3 className="text-xl font-bold">أدوات نعمل بها</h3>
-          <dl className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <h3 className="text-xl font-bold">{method.toolsTitle}</h3>
+          <dl className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {method.stack.map((g) => (
               <div key={g.group}>
                 <dt className="text-sm font-semibold text-haze">{g.group}</dt>

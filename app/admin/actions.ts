@@ -69,6 +69,29 @@ export async function updateService(form: FormData) {
   revalidatePath("/admin/services");
 }
 
+export async function createService(form: FormData) {
+  await requireAdmin();
+  const slug = str(form, "slug", 60).toLowerCase();
+  const image = safeImage(str(form, "image", 500));
+  const title = str(form, "title", 200);
+  const description = str(form, "description", 1000);
+  if (!/^[a-z0-9][a-z0-9-]{1,58}$/.test(slug) || !title || !description || !image) return;
+  const db = getDb();
+  if (await db.service.findUnique({ where: { slug }, select: { id: true } })) return;
+  await db.service.create({
+    data: { slug, title, description, image, sortOrder: int(form, "sortOrder"), published: form.get("published") === "on" },
+  });
+  revalidatePath("/");
+  revalidatePath("/admin/services");
+}
+
+export async function deleteService(form: FormData) {
+  await requireAdmin();
+  await getDb().service.delete({ where: { id: str(form, "id", 50) } });
+  revalidatePath("/");
+  revalidatePath("/admin/services");
+}
+
 /* ---------- projects (campaign album) ---------- */
 
 export async function createProject(form: FormData) {

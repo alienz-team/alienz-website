@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
-import { pillars, type Pillar } from "@/lib/content";
+import type { Pillar } from "@/lib/content";
+import type { Dict } from "@/lib/i18n";
 import type { ServiceView } from "@/lib/site-data";
 import { ArrowLeft, Spark } from "./Icons";
 import { Odometer } from "./Odometer";
@@ -15,7 +16,9 @@ const layout: Record<string, string> = {
   marketing: "lg:col-span-2",
 };
 
-export function Services({ services }: { services: ServiceView[] }) {
+export function Services({ t, services }: { t: Dict; services: ServiceView[] }) {
+  const pillars = t.pillars;
+  const showEyebrow = t.locale === "ar";
   const bySlug = new Map(services.map((s) => [s.id, s]));
   const claimed = new Set(pillars.flatMap((p) => p.slugs));
   // Services an admin adds later still show up, in the catch-all card.
@@ -26,24 +29,24 @@ export function Services({ services }: { services: ServiceView[] }) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-2xl">
-            <p dir="ltr" className="text-right font-latin text-sm font-medium text-alien">
+            <p dir="ltr" className="rtl:text-right font-latin text-sm font-medium text-alien">
               Services <span className="text-haze">/ {String(pillars.length).padStart(2, "0")}</span>
             </p>
             <h2 id="services-title" className="mt-2 text-4xl font-black sm:text-5xl">
-              كل ما يحتاجه مشروعك الرقمي، من فريق واحد
+              {t.services.heading}
             </h2>
           </div>
           <a href="#contact" className="inline-flex items-center gap-2 font-semibold text-alien hover:text-starlight">
-            اطلب استشارة
+            {t.services.consult}
             <ArrowLeft className="h-4 w-4" />
           </a>
         </div>
 
-        <div className="mt-12 grid grid-flow-dense gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid grid-flow-dense grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {pillars.map((p, i) => {
             const items = p.slugs.map((s) => bySlug.get(s)).filter((s): s is ServiceView => !!s);
             if (p.catchAll) items.push(...extra);
-            return <PillarCard key={p.id} pillar={p} items={items} order={i} className={layout[p.id] ?? ""} />;
+            return <PillarCard key={p.id} pillar={p} items={items} order={i} eyebrow={showEyebrow} className={layout[p.id] ?? ""} />;
           })}
         </div>
       </div>
@@ -51,9 +54,9 @@ export function Services({ services }: { services: ServiceView[] }) {
   );
 }
 
-type CardProps = { pillar: Pillar; items: ServiceView[]; order: number; className: string };
+type CardProps = { pillar: Pillar; items: ServiceView[]; order: number; eyebrow: boolean; className: string };
 
-function PillarCard({ pillar, items, order, className }: CardProps) {
+function PillarCard({ pillar, items, order, eyebrow, className }: CardProps) {
   const featured = pillar.id === "software";
   const wide = pillar.id === "marketing";
   // One service per card: its admin-editable description is the blurb.
@@ -67,7 +70,7 @@ function PillarCard({ pillar, items, order, className }: CardProps) {
       style={{ "--rd": `${(order % 4) * 80}ms` } as CSSProperties}
       className={`glass spot beam group flex flex-col overflow-hidden rounded-lg hover:border-alien-bright/30 hover:shadow-[0_0_60px_-18px_rgb(0_255_102/0.45)] ${className}`}
     >
-      <div className={`relative overflow-hidden border-b border-white/[0.06] ${featured ? "aspect-[2/1]" : "aspect-[2/1] lg:aspect-[16/7]"}`}>
+      <div className={`relative overflow-hidden border-b border-veil/[0.06] ${featured ? "aspect-[2/1]" : "aspect-[2/1] lg:aspect-[16/7]"}`}>
         {/* Plain <img>: static SVG served as-is on Workers, animations included. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -82,7 +85,7 @@ function PillarCard({ pillar, items, order, className }: CardProps) {
         <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-orbit/90 via-transparent to-transparent" />
         <span
           dir="ltr"
-          className="absolute top-3 left-3 font-latin text-[0.65rem] tracking-[0.2em] text-alien-bright/70"
+          className="absolute top-3 end-3 font-latin text-[0.65rem] tracking-[0.2em] text-alien-bright/70"
           aria-hidden
         >
           {String(order + 1).padStart(2, "0")}
@@ -90,14 +93,16 @@ function PillarCard({ pillar, items, order, className }: CardProps) {
       </div>
 
       <div className={`flex flex-1 flex-col ${featured ? "p-6 sm:p-7" : "p-5 sm:p-6"}`}>
-        <p dir="ltr" className="text-right font-latin text-xs font-medium text-alien">
-          {pillar.en}
-        </p>
-        <h3 className={`mt-1.5 font-bold ${featured ? "text-3xl" : "text-xl"}`}>{pillar.title}</h3>
+        {eyebrow && (
+          <p dir="ltr" className="rtl:text-right font-latin text-xs font-medium text-alien">
+            {pillar.en}
+          </p>
+        )}
+        <h3 className={`${eyebrow ? "mt-1.5" : ""} font-bold ${featured ? "text-2xl sm:text-3xl" : "text-xl"}`}>{pillar.title}</h3>
         <p className={`mt-2.5 text-haze ${featured ? "" : "text-[0.95rem] leading-relaxed"}`}>{blurb}</p>
 
         {(pillar.metric || pillar.gauge) && (
-          <div className="mt-5 flex flex-wrap items-center gap-x-8 gap-y-5 border-y border-white/[0.07] py-5">
+          <div className="mt-5 flex flex-wrap items-center gap-x-8 gap-y-5 border-y border-veil/[0.07] py-5">
             {pillar.gauge && <Gauge pct={pillar.gauge.pct} label={pillar.gauge.label} />}
             {pillar.metric && (
               <div>
@@ -111,7 +116,7 @@ function PillarCard({ pillar, items, order, className }: CardProps) {
         {(list.length > 0 || pillar.points) && (
           <ul className={`mt-5 grid gap-x-6 gap-y-3 ${featured || wide ? "sm:grid-cols-2" : ""}`}>
             {list.map((s) => (
-              <li key={s.id} className="border-t border-white/[0.07] pt-3">
+              <li key={s.id} className="border-t border-veil/[0.07] pt-3">
                 <p className="font-semibold text-starlight">{s.title}</p>
                 {featured && <p className="mt-1 text-sm text-haze">{s.description}</p>}
               </li>
@@ -137,9 +142,9 @@ function Gauge({ pct, label }: { pct: number; label: string }) {
     <div className="flex items-center gap-4">
       <div className="relative h-24 w-24 shrink-0">
         <svg viewBox="0 0 100 100" className="gauge h-full w-full -rotate-90" style={style} aria-hidden>
-          <circle cx="50" cy="50" r="42" fill="none" stroke="rgb(255 255 255 / 0.07)" strokeWidth="6" />
-          <circle cx="50" cy="50" r="42" fill="none" stroke="#00ff66" strokeOpacity="0.25" strokeWidth="1" strokeDasharray="1 5.6" />
-          <circle className="gauge-arc" cx="50" cy="50" r="42" fill="none" stroke="#00ff66" strokeWidth="6" strokeLinecap="round" />
+          <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeOpacity="0.08" strokeWidth="6" className="text-veil" />
+          <circle cx="50" cy="50" r="42" fill="none" style={{ stroke: "var(--color-alien-bright)" }} strokeOpacity="0.25" strokeWidth="1" strokeDasharray="1 5.6" />
+          <circle className="gauge-arc" cx="50" cy="50" r="42" fill="none" style={{ stroke: "var(--color-alien-bright)" }} strokeWidth="6" strokeLinecap="round" />
         </svg>
         <div className="absolute inset-0 grid place-items-center">
           <Odometer value={`${pct}%`} className="text-lg font-bold text-starlight" />

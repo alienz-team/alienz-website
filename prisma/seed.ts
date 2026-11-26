@@ -1,10 +1,9 @@
 // Seeds Neon with the site's real content from lib/content.ts.
 // Safe to re-run and additive: services upsert by slug without overwriting
-// admin edits (an image still on its original default moves to the new cyber
-// visual), album works are inserted only if their image is not in the table
+// admin edits, album works are inserted only if their image is not in the table
 // yet, and settings only when missing.
 import { PrismaClient } from "@prisma/client";
-import { contact, legacyServiceImages, marketing, services } from "../lib/content";
+import { contact, marketing, services } from "../lib/content";
 
 const prisma = new PrismaClient();
 
@@ -15,10 +14,6 @@ async function main() {
       update: {},
       create: { slug: s.id, title: s.title, description: s.description, image: s.image, sortOrder: i },
     });
-    const legacy = legacyServiceImages[s.id];
-    if (legacy) {
-      await prisma.service.updateMany({ where: { slug: s.id, image: legacy }, data: { image: s.image } });
-    }
   }
 
   const existing = new Set((await prisma.project.findMany({ select: { image: true } })).map((p) => p.image));

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { logout } from "../actions";
 import { btnGhost } from "@/components/admin/ui";
+import { ThemeToggle } from "@/components/SiteControls";
+import { getDictionary } from "@/lib/i18n";
 
 export const metadata: Metadata = {
   title: "لوحة التحكم | ALIENZ TEAM",
@@ -22,18 +24,23 @@ const links = [
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await requireAdmin();
+  // The dashboard is Arabic-only, whatever language the public site is in.
+  const controls = getDictionary("ar").controls;
 
   return (
-    <div className="min-h-dvh lg:grid lg:grid-cols-[15rem_1fr]">
+    <div dir="rtl" lang="ar" className="min-h-dvh lg:grid lg:grid-cols-[15rem_1fr]">
       <aside className="border-b border-line bg-orbit lg:min-h-dvh lg:border-b-0 lg:border-l">
         <div className="flex items-center justify-between gap-3 p-4 lg:block lg:p-6">
           <Link href="/admin" className="flex items-center gap-3">
             <Image src="/media/logo.webp" alt="" width={36} height={36} className="h-9 w-9 object-contain" />
             <span className="font-latin text-sm font-bold tracking-wide" dir="ltr">ALIENZ TEAM</span>
           </Link>
-          <form action={logout} className="lg:hidden">
-            <button className={btnGhost}>تسجيل الخروج</button>
-          </form>
+          <div className="flex items-center gap-2 lg:mt-5">
+            <ThemeToggle t={controls} />
+            <form action={logout} className="lg:hidden">
+              <button className={btnGhost}>تسجيل الخروج</button>
+            </form>
+          </div>
         </div>
         <nav aria-label="أقسام لوحة التحكم" className="overflow-x-auto px-4 pb-3 lg:px-3">
           <ul className="flex gap-1 lg:flex-col">

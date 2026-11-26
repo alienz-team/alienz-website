@@ -7,7 +7,7 @@ import type { CSSProperties } from "react";
 
 type LayerVars = CSSProperties & { "--z"?: string; "--par"?: string };
 
-export function AlienStation() {
+export function AlienStation({ alt }: { alt: string }) {
   return (
     <div data-scroll-stage className="station relative mx-auto aspect-[1100/1035] w-full max-w-[40rem]">
       <div aria-hidden className="station-floor absolute inset-x-[8%] bottom-[-4%] h-[16%] rounded-[50%]" />
@@ -21,7 +21,7 @@ export function AlienStation() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/media/aliens-hero.webp"
-              alt="فضائيون بسماعات رأس يبرمجون على شاشات هولوغرافية وسط مطر من الشيفرات الخضراء"
+              alt={alt}
               width={1100}
               height={1035}
               fetchPriority="high"

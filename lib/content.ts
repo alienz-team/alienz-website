@@ -8,7 +8,6 @@ export const brand = {
   /** Wordmark shown in the header. */
   mark: "ALIENZ TECH",
   tagline: "فنون البرمجة والتصميم",
-  heroCta: "انطلق معنا",
   logoAlt: "شعار ALIENZ TEAM: رأس فضائي بسماعات داخل مصباح أخضر",
 };
 
@@ -86,19 +85,7 @@ export const services: Service[] = [
   },
 ];
 
-/** Service images from before the cyber visuals; the seed swaps any row still
- *  on one of these for its new visual (admin-chosen images are left alone). */
-export const legacyServiceImages: Record<string, string> = {
-  web: "/media/svc-web.webp",
-  mobile: "/media/svc-mobile.webp",
-  identity: "/media/svc-identity.webp",
-  motion: "/media/svc-motion.webp",
-  photo: "/media/svc-photo.webp",
-  audio: "/media/svc-audio.webp",
-};
-
 export const marketing = {
-  title: "خدمات التسويق والإعلان",
   intro: "الوصول الكامل للفئة المستهدفة بكل دقة، بخطط استهداف مدروسة وفعّالة.",
   offerings: [
     "الاستشارات والحلول التسويقية",
@@ -118,7 +105,6 @@ export const marketing = {
 };
 
 export const about = {
-  title: "حول",
   lead: "مجموعة من الشباب المحترف جمعنا حب الفن والعمل",
   paragraphs: [
     "نعمل في مجالات التقنية والحلول الرقمية ومجال الدعاية والإعلان.",
@@ -126,15 +112,9 @@ export const about = {
   ],
   reassurance:
     "حتى إذا لم تعرف ما الذي تبحث عنه أو أنك حائر في أفكارك، لا تتردد بالتواصل معنا ونحن نضمن لك الوصول بإذن الله.",
-  images: [
-    { src: "/media/about-1.webp", w: 720, h: 404, alt: "شعار ALIENZ TEAM مع عبارة هجين البرمجة والتصميم" },
-    { src: "/media/about-2.webp", w: 720, h: 405, alt: "شعار ALIENZ TEAM على خلفية سوداء" },
-    { src: "/media/about-3.webp", w: 740, h: 531, alt: "مساحة عمل بشاشات أمام جدار بصورة مجرّة" },
-  ],
 };
 
 export const contact = {
-  title: "الاتصال",
   location: "طرابلس، ليبيا",
   phoneDisplay: "+218-0915671934",
   phoneHref: "tel:+218915671934",
@@ -149,8 +129,7 @@ export const contact = {
 
 export const hero = {
   badge: "فريق تقني من طرابلس، ليبيا",
-  lead:
-    "مجموعة من الشباب المحترف جمعنا حب الفن والعمل. نبني البرمجيات وأنظمة الذكاء الاصطناعي، نصمم الهويات، ونطلق الحملات التي تصل لجمهورك.",
+  lead: "نبني البرمجيات وأنظمة الذكاء الاصطناعي، ونصمم هويات وحملات تصل لجمهورك.",
   primary: "ابدأ مشروعك",
   secondary: "تصفح أعمالنا",
   // Tripoli, Libya.

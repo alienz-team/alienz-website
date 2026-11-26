@@ -1,6 +1,6 @@
 # ALIENZ TEAM website
 
-Arabic (RTL) marketing site and admin for ALIENZ TEAM — Next.js 15 App Router,
+Bilingual (Arabic RTL / English LTR) marketing site, installable PWA and admin for ALIENZ TEAM — Next.js 15 App Router,
 Tailwind CSS v4, Prisma + Neon PostgreSQL, deployed to Cloudflare Workers with
 [OpenNext](https://opennext.js.org/cloudflare).
 
@@ -14,8 +14,15 @@ npm run db:seed             # load the site's content (safe to re-run)
 npm run dev                 # http://localhost:3000
 ```
 
-Admin: `/admin` (sign in with `ADMIN_EMAIL` / `ADMIN_PASSWORD`).
+Admin: `/admin` (sign in with `ADMIN_EMAIL` — default `alienzteam7@gmail.com` —
+and `ADMIN_PASSWORD`). `middleware.ts` turns away requests without a session
+cookie; every admin page and server action re-verifies the signed cookie.
 Manage contact-form messages, services, the marketing album, and contact details.
+
+Public UI controls: language (`lang` cookie, `ar`/`en`), dark/light theme
+(`localStorage.theme`, OS preference until chosen) and an install button
+(`beforeinstallprompt`, with Add-to-Home-Screen steps on iOS). The PWA is
+`app/manifest.ts` + `public/sw.js` + `public/icons/`.
 
 ## Cloudflare
 
@@ -26,8 +33,14 @@ npm run deploy              # build and deploy (requires `wrangler login`)
 ```
 
 Worker config lives in `wrangler.jsonc` (`nodejs_compat` enabled).
-Set `DATABASE_URL`, `DIRECT_URL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` and
-`ADMIN_SESSION_SECRET` as Worker variables/secrets in the Cloudflare dashboard.
+Set `DATABASE_URL`, `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` (plus
+optional `ADMIN_EMAIL`) as Worker secrets, e.g. `npx wrangler secret put ADMIN_PASSWORD`.
+Without `ADMIN_SESSION_SECRET` the session key is derived from
+`DATABASE_URL` + `ADMIN_PASSWORD`.
+
+Custom domain: Workers & Pages → `alienz-website` → Settings → Domains & Routes →
+Add → Custom domain (the zone must be on Cloudflare). `metadataBase` in
+`app/layout.tsx` is `https://alienz.tech`.
 
 ## Scripts
 

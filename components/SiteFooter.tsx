@@ -1,8 +1,10 @@
 import Image from "next/image";
-import { brand, contact, nav } from "@/lib/content";
+import { brand, contact } from "@/lib/content";
+import type { Dict } from "@/lib/i18n";
 import { socialIcons } from "./Icons";
+import { InstallButton } from "./SiteControls";
 
-export function SiteFooter() {
+export function SiteFooter({ t }: { t: Dict }) {
   return (
     <footer className="border-t border-line bg-orbit/60">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
@@ -10,16 +12,16 @@ export function SiteFooter() {
           <div className="flex items-center gap-4">
             <Image src="/media/logo.webp" alt="" width={64} height={64} className="h-16 w-16 object-contain" />
             <div>
-              <p className="font-latin text-xl font-bold tracking-wide" dir="ltr" style={{ textAlign: "right" }}>
+              <p className="font-latin text-xl font-bold tracking-wide rtl:text-right" dir="ltr">
                 {brand.name}
               </p>
-              <p className="text-haze">{brand.tagline}</p>
+              <p className="text-haze">{t.brand.tagline}</p>
             </div>
           </div>
 
-          <nav aria-label="روابط التذييل">
+          <nav aria-label={t.footer.links}>
             <ul className="grid grid-cols-2 gap-x-10 gap-y-3 sm:flex sm:flex-wrap sm:gap-x-8">
-              {nav.map((item) => (
+              {t.nav.map((item) => (
                 <li key={item.href}>
                   <a href={item.href} className="text-haze transition-colors hover:text-starlight">
                     {item.label}
@@ -29,7 +31,8 @@ export function SiteFooter() {
             </ul>
           </nav>
 
-          <ul className="flex gap-2" aria-label="حساباتنا على مواقع التواصل">
+          <div className="flex flex-col items-start gap-4">
+          <ul className="flex gap-2" aria-label={t.contactSection.socialsLabel}>
             {contact.socials.map((s) => {
               const Icon = socialIcons[s.icon];
               return (
@@ -38,7 +41,7 @@ export function SiteFooter() {
                     href={s.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={s.label}
+                    aria-label={t.socials[s.icon] ?? s.label}
                     className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-haze transition-colors hover:border-alien hover:text-alien"
                   >
                     <Icon />
@@ -47,11 +50,15 @@ export function SiteFooter() {
               );
             })}
           </ul>
+          <InstallButton t={t.controls} variant="full" />
+          </div>
         </div>
 
         <div className="mt-12 flex flex-col gap-2 border-t border-line pt-6 text-sm text-haze sm:flex-row sm:justify-between">
-          <p>حقوق النشر © {new Date().getFullYear()} جميع الحقوق محفوظة. {brand.name}</p>
-          <p>{contact.location}</p>
+          <p>
+            {t.footer.rights.replace("{year}", String(new Date().getFullYear()))} {brand.name}
+          </p>
+          <p>{t.location}</p>
         </div>
       </div>
     </footer>
