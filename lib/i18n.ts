@@ -44,7 +44,14 @@ const ar = {
   brand: { tagline: brand.tagline, logoAlt: brand.logoAlt },
   nav: nav.map((n): { href: string; label: string } => ({ ...n })),
   hero: { ...hero, stats: { services: "خدمات متاحة", works: "أعمال منشورة", clock: "التوقيت في طرابلس" } },
-  heroAlt: "فضائيون بسماعات رأس يبرمجون على شاشات هولوغرافية وسط مطر من الشيفرات الخضراء",
+  /** One description per hero showcase slide, in slide order. */
+  heroSlides: [
+    "فضائيون بسماعات رأس يبرمجون على شاشات هولوغرافية وسط مطر من الشيفرات الخضراء",
+    "فضائي بقلنسوة يرسم تصميمًا ثلاثي الأبعاد على لوح زجاجي داخل استوديو التصميم",
+    "فريق من الفضائيين بالبدلات يراجع تحليلات حملة تسويقية على شاشة هولوغرافية",
+    "فضائي يسجّل صوتًا خلف الميكروفون بينما يضبط زميله طاولة المكساج في الاستوديو",
+    "فضائيون يصوّرون بكاميرا فيديو وإضاءة استوديو أمام شاشة هولوغرافية",
+  ],
   pillars: pillars as Pillar[],
   categories: Object.fromEntries(projectCategories.map((c) => [c.id, c.label])) as Record<string, string>,
   method: { title: method.title, intro: method.intro, steps: method.steps, stack: method.stack, toolsTitle: "أدوات نعمل بها" },
@@ -141,7 +148,13 @@ const en: Dict = {
     coords: hero.coords,
     stats: { services: "Services", works: "Published works", clock: "Time in Tripoli" },
   },
-  heroAlt: "Aliens in headsets coding on holographic screens in a rain of green code",
+  heroSlides: [
+    "Aliens in headsets coding on holographic screens in a rain of green code",
+    "A hooded alien sketching a 3D design on a glass tablet in the design studio",
+    "A team of aliens in suits reviewing campaign analytics on a holographic display",
+    "An alien recording vocals at the mic while a colleague works the mixing desk",
+    "Aliens shooting with a video camera and studio light in front of a holographic screen",
+  ],
   pillars: pillars.map((p) => ({ ...p, ...pillarEn[p.id] })),
   categories: {
     software: "Software",
